@@ -18,10 +18,10 @@ To build the platform, navigate to the root directory of the source code and run
 g++ --std=c++11 main.cpp MerkelMain.cpp CSVReader.cpp OrderBook.cpp OrderBookEntry.cpp Wallet.cpp
 ```
 
-This will create an executable file named ./a.out
+This will create an executable file named a.out
 
 ## Usage
-To use the platform, run the cryptotradingplatform executable:
+To use the platform, run the executable:
 
 ```
 ./a.out
@@ -58,8 +58,9 @@ From the main menu, you can perform the following actions:
 
 ## Future ideas
 
-This idea was conducted as part of the Coursera specialisation "User C++ to build a crypto trading platform" 
+This idea was conducted as part of the Coursera specialisation "Use C++ to build a crypto trading platform" 
 and upon completion of the 5th and final course this was the end product. However, there are a few aspects
 Id like to add to this project:
-- Creat a automated trading platform
+- Create a automated trading platform
 - Increase the input file count to process more ask/bids and a wider range of cryptos
+- Attempt multi-exchange arbitrage 
