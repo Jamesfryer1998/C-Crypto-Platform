@@ -211,34 +211,24 @@ void MerkelMain::printOrderBookStats()
     for (std::string const& p: orderBook.getKnownProducts())
     {
         std::cout << "- " << p;
-        std::vector<OrderBookEntry> entries = orderBook.getOrders(OrderBookType::ask,
+        std::vector<OrderBookEntry> askEntries = orderBook.getOrders(OrderBookType::ask,
                                                                   p,
                                                                   currentTime);
-        std::cout << " - Asks seen: " << entries.size();
-        std::cout << " | Max Ask: " << OrderBook::getHighPrice(entries);
-        std::cout << " | Min Ask: " << OrderBook::getLowPrice(entries);
-        std::cout << " | Spread " << OrderBook::getHighPrice(entries) - OrderBook::getLowPrice(entries);
-        std::cout << " | Avg Price: " << OrderBook::getAvgPrice(entries) << std::endl;
+        std::cout << " - Asks seen: " << askEntries.size();
+        std::cout << " | Max Ask: " << OrderBook::getHighPrice(askEntries);
+        std::cout << " | Min Ask: " << OrderBook::getLowPrice(askEntries);
+        std::cout << " | Spread " << OrderBook::getHighPrice(askEntries) - OrderBook::getLowPrice(askEntries);
+        std::cout << " | Avg Price: " << OrderBook::getAvgPrice(askEntries) << std::endl;
+
+        std::cout << "- " << p;
+        std::vector<OrderBookEntry> bidEntries = orderBook.getOrders(OrderBookType::bid,
+                                                                  p,
+                                                                  currentTime);
+        std::cout << " - Asks seen: " << bidEntries.size();
+        std::cout << " | Max Ask: " << OrderBook::getHighPrice(bidEntries);
+        std::cout << " | Min Ask: " << OrderBook::getLowPrice(bidEntries);
+        std::cout << " | Spread " << OrderBook::getHighPrice(bidEntries) - OrderBook::getLowPrice(bidEntries);
+        std::cout << " | Avg Price: " << OrderBook::getAvgPrice(bidEntries) << std::endl;
     }
-    
-    // OrderBook::testStats();
-    // std::cout << "- There are " << orders.size() << " entries." << std::endl;
-    // std::vector<double> prices;
-    // unsigned int ask_count = 0;
-    // unsigned int bid_count = 0;
-
-    // for (OrderBookEntry& order: orders)
-    // {
-    //     prices.push_back(order.price);
-
-    //     if (order.type == OrderBookType::bid)
-    //     {
-    //         bid_count++;
-    //     }
-    //     if (order.type == OrderBookType::ask)
-    //     {
-    //         ask_count++;
-    //     }
-    // }
 
 }
