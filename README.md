@@ -62,5 +62,6 @@ This idea was conducted as part of the Coursera specialisation "Use C++ to build
 and upon completion of the 5th and final course this was the end product. However, there are a few aspects
 Id like to add to this project:
 - Create a automated trading platform
+- Incorporate more advances statistical measurements
 - Increase the input file count to process more ask/bids and a wider range of cryptos
-- Attempt multi-exchange arbitrage 
+- Attempt multi-exchange arbitrage
