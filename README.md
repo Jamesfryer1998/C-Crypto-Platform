@@ -38,26 +38,28 @@ From the main menu, you can perform the following actions:
 5: Wallet State<br>
 6: Continue
 
-1: Print Help
+### 1: Print Help
 - This prints the objective of the platform.
 
-2: Print Exchange Stats
+### 2: Print Exchange Stats
 - This prints some simple stats such as: max, min, avg and spread, for each unqiue cryptocurrency.
 
-3: Make A Ask
+### 3: Make A Ask
 - Allows you to make a ask in the form of e.g. ETH/BTC,1,1
 
-4: Make A Bid
+### 4: Make A Bid
 - Allows you to make a bid in the form of e.g. ETH/BTC,1,1
 
-5: Wallet State
+### 5: Wallet State
 - Prints the currencies held in your wallet, if no currencies held will show your wallet is empty.
 
-6: Continue
+### 6: Continue
 - This will process the current asks and bids you have placed and move the simulation to the next timeframe.
 
 ## Future ideas
+
 This idea was conducted as part of the Coursera specialisation "User C++ to build a crypto trading platform" 
 and upon completion of the 5th and final course this was the end product. However, there are a few aspects
 Id like to add to this project:
-- 
+- Creat a automated trading platform
+- Increase the input file count to process more ask/bids and a wider range of cryptos
