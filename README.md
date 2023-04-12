@@ -31,11 +31,11 @@ This will start the platform and display the main menu.
 
 From the main menu, you can perform the following actions:
 
-1: Print Help
-2: Print Exchange Stats
-3: Make A Ask
-4: Make A Bid
-5: Wallet State
+1: Print Help<br>
+2: Print Exchange Stats<br>
+3: Make A Ask<br>
+4: Make A Bid<br>
+5: Wallet State<br>
 6: Continue
 
 1: Print Help
