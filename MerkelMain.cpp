@@ -224,11 +224,10 @@ void MerkelMain::printOrderBookStats()
         std::vector<OrderBookEntry> bidEntries = orderBook.getOrders(OrderBookType::bid,
                                                                   p,
                                                                   currentTime);
-        std::cout << " - Asks seen: " << bidEntries.size();
-        std::cout << " | Max Ask: " << OrderBook::getHighPrice(bidEntries);
-        std::cout << " | Min Ask: " << OrderBook::getLowPrice(bidEntries);
+        std::cout << " - Bids seen: " << bidEntries.size();
+        std::cout << " | Max Bid: " << OrderBook::getHighPrice(bidEntries);
+        std::cout << " | Min Bid: " << OrderBook::getLowPrice(bidEntries);
         std::cout << " | Spread " << OrderBook::getHighPrice(bidEntries) - OrderBook::getLowPrice(bidEntries);
-        std::cout << " | Avg Price: " << OrderBook::getAvgPrice(bidEntries) << std::endl;
+        std::cout << " | Avg Price: " << OrderBook::getAvgPrice(bidEntries) << "\n" << std::endl;
     }
-
 }

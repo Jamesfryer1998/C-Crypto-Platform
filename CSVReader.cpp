@@ -29,7 +29,7 @@ std::vector<OrderBookEntry> CSVReader::readCSV(std::string fileName)
                 entries.push_back(OBE);
             }catch(const std::exception& e)
             {
-                std::cout << "CSVReader::readCSV bad data processed"  << std::endl;
+                // std::cout << "CSVReader::readCSV bad data processed"  << std::endl;
             }
             
         }
@@ -65,7 +65,7 @@ OrderBookEntry CSVReader::csvStringToOBE(std::vector<std::string> tokens)
 
     if (tokens.size() != 5) 
     {
-        std::cout << "Invalid CSV line.";
+        // std::cout << "Invalid CSV line.";
         throw std::exception{};
         // bad_count += 1;
     }

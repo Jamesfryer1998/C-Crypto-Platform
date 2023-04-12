@@ -7,19 +7,25 @@ You may use VSCode but you will have to install the Microsoft C++ Extension.
 
 After installing C++, you can download the source code for this platform from GitHub:
 
+```
 git clone https://github.com/Jamesfryer1998/C-Crypto-Platform.git 
+```
 
 ## Building
 To build the platform, navigate to the root directory of the source code and run the following command:
 
+```
 g++ --std=c++11 main.cpp MerkelMain.cpp CSVReader.cpp OrderBook.cpp OrderBookEntry.cpp Wallet.cpp
+```
 
 This will create an executable file named ./a.out
 
 ## Usage
 To use the platform, run the cryptotradingplatform executable:
 
+```
 ./a.out
+```
 
 This will start the platform and display the main menu.
 
