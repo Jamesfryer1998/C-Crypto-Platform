@@ -3,6 +3,7 @@
 #include "OrderBookEntry.h"
 #include "OrderBook.h"
 #include "Wallet.h"
+#include "AutoTrader.h"
 
 class MerkelMain
 {
@@ -19,6 +20,7 @@ class MerkelMain
         void makeBid();
         void walletState();
         void processTrade();
+        // void callAutoTrader();
         void invalidChoice();
         int getUserOption();
         void processUserOption(int userOption);
@@ -32,4 +34,6 @@ class MerkelMain
         OrderBook orderBook{"20200317.csv"};
 
         Wallet wallet;
+
+        AutoTrader autoTrade;
 };

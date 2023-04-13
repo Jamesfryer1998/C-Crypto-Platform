@@ -2,6 +2,7 @@
 #include "OrderBookEntry.h"
 #include "CSVReader.h"
 #include "Wallet.h"
+#include "AutoTrader.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -33,6 +34,7 @@ void MerkelMain::printMenu()
     std::cout << "4: Make A Bid" << std::endl; 
     std::cout << "5: Wallet State" << std::endl; 
     std::cout << "6: Continue" << std::endl; 
+    std::cout << "7: AutoTrader Options" << std::endl; 
     std::cout << "==================" << std::endl;
     std::cout << "Select a option from 1-6" << std::endl; 
     std::cout << "Current time: " << currentTime << std::endl;
@@ -199,7 +201,12 @@ void MerkelMain::processUserOption(int userOption)
         MerkelMain::processTrade();
     }
 
-    if (userOption > 6) // bad input
+    if (userOption == 7)
+    {
+        autoTrade.callAutoTrader();
+    }
+
+    if (userOption > 7) // bad input
     {
         MerkelMain::invalidChoice();
     }
