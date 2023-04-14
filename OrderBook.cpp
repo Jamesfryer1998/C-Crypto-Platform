@@ -7,6 +7,7 @@ OrderBook::OrderBook(std::string fileName)
 {
     orders = CSVReader::readCSV(fileName);
 }
+
 std::vector<std::string> OrderBook::getKnownProducts()
 {
     std::vector<std::string> products;
@@ -21,6 +22,7 @@ std::vector<std::string> OrderBook::getKnownProducts()
     }
     return products;
 }
+
 std::vector<OrderBookEntry> OrderBook::getOrders(OrderBookType type,
                                         std::string product, 
                                         std::string timestamp)

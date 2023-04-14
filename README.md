@@ -15,7 +15,7 @@ git clone https://github.com/Jamesfryer1998/C-Crypto-Platform.git
 To build the platform, navigate to the root directory of the source code and run the following command:
 
 ```
-g++ --std=c++11 main.cpp MerkelMain.cpp CSVReader.cpp OrderBook.cpp OrderBookEntry.cpp Wallet.cpp
+g++ --std=c++11 main.cpp MerkelMain.cpp CSVReader.cpp OrderBook.cpp OrderBookEntry.cpp Wallet.cpp AutoTrader.cpp
 ```
 
 This will create an executable file named a.out
@@ -31,12 +31,15 @@ This will start the platform and display the main menu.
 
 From the main menu, you can perform the following actions:
 
+======================
 1: Print Help<br>
 2: Print Exchange Stats<br>
 3: Make A Ask<br>
 4: Make A Bid<br>
 5: Wallet State<br>
 6: Continue
+7: AutoTrader Options
+======================
 
 ### 1: Print Help
 - This prints the objective of the platform.
