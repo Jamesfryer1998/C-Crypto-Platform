@@ -31,7 +31,6 @@ This will start the platform and display the main menu.
 
 From the main menu, you can perform the following actions:
 
-======================
 1: Print Help<br>
 2: Print Exchange Stats<br>
 3: Make A Ask<br>
@@ -39,7 +38,6 @@ From the main menu, you can perform the following actions:
 5: Wallet State<br>
 6: Continue
 7: AutoTrader Options
-======================
 
 ### 1: Print Help
 - This prints the objective of the platform.
