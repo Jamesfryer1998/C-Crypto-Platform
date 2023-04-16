@@ -1,13 +1,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "OrderBookEntry.h"
-#include "MerkelMain.h"
-#include "CSVReader.h"
-#include "Wallet.h"
-
-#pragma GCC diagnostic ignored "-Wc++11-extensions"
-#pragma GCC diagnostic ignored "-Wlocal-type-template-args"
+#include <crypto-platform/OrderBookEntry.h>
+#include <crypto-platform/MerkelMain.h>
+#include <crypto-platform/CSVReader.h>
+#include <crypto-platform/Wallet.h>
 
 int main()
 {

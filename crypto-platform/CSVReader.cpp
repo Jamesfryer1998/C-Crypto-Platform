@@ -18,8 +18,6 @@ std::vector<OrderBookEntry> CSVReader::readCSV(std::string fileName)
 
     if (csvFile.is_open())
     {
-        int bad_count = 0;
-        int good_count = 0;
         std::cout << "File open." << std::endl;
         while (std::getline(csvFile, line))
         {
@@ -43,7 +41,7 @@ std::vector<std::string> CSVReader::tokenise(std::string csvLine, char separator
 {
     std::vector<std::string> tokens;
     
-    signed int start, end;
+    std::string::size_type start, end;
     std::string token;
     start = csvLine.find_first_not_of(separator, 0);
 

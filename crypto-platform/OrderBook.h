@@ -1,9 +1,10 @@
 #pragma once
 
-#include "OrderBookEntry.h"
-#include "CSVReader.h"
+#include <crypto-platform/OrderBookEntry.h>
+#include <crypto-platform/CSVReader.h>
 #include <string>
 #include <vector>
+#include <set>
 
 class OrderBook
 {
@@ -11,7 +12,7 @@ class OrderBook
     /** construct, reading a csv data file */ 
         OrderBook(std::string fileName);
     /** return vector of all knwon products in dataset */ 
-        std::vector<std::string> getKnownProducts();
+        std::set<std::string> getKnownProducts();
     /** return vector of Orders according to the sent filters */ 
         std::vector<OrderBookEntry> getOrders(OrderBookType type,
                                               std::string product, 

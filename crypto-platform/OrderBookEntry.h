@@ -3,9 +3,6 @@
 #include <string>
 #include <vector>
 
-#pragma GCC diagnostic ignored "-Wc++11-extensions"
-#pragma GCC diagnostic ignored "-Wlocal-type-template-args"
-
 enum class OrderBookType{bid, ask, asksale, bidsale, unknown};
 
 class OrderBookEntry

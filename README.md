@@ -12,19 +12,29 @@ git clone https://github.com/Jamesfryer1998/C-Crypto-Platform.git
 ```
 
 ## Building
-To build the platform, navigate to the root directory of the source code and run the following command:
-
+To build the platform install conda and create and activate the environment defined in env.yaml. 
+Navigate to the root directory of the source code and prepare the build directory:
 ```
-g++ --std=c++11 main.cpp MerkelMain.cpp CSVReader.cpp OrderBook.cpp OrderBookEntry.cpp Wallet.cpp AutoTrader.cpp
+cmake -B build # Creates the makefile, re-run from root when CMakeFiles.txt change.
 ```
 
-This will create an executable file named a.out
+Once done, build the platform:
+```
+ cmake --build build
+```
+
+Run the tests:
+```
+ctest --test-dir build
+```
+
+This will create an executable file `./build/apps/crypto-platform-app`
 
 ## Usage
 To use the platform, run the executable:
 
 ```
-./a.out
+`./build/apps/crypto-platform-app`
 ```
 
 This will start the platform and display the main menu.
