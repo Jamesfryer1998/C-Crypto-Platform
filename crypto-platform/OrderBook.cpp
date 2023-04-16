@@ -12,10 +12,10 @@ OrderBook::OrderBook(std::string fileName)
 OrderBook::KnownProducts OrderBook::getKnownProducts()
 {
     KnownProducts products;
-    std::for_each(std::begin(orders), std::end(orders), 
-        [&products] (OrderBookEntry& order) {
-            products.insert(order.product);
-        });
+    for(auto& order: orders)
+    {
+        products.insert(order.product);
+    };
     return products;
 }
 
