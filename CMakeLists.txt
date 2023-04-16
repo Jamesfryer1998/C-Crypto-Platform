@@ -21,7 +21,7 @@ endif()
 
 project(crypto-platform)
 set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra")
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 enable_testing()
 add_subdirectory(crypto-platform)
 add_subdirectory(apps)

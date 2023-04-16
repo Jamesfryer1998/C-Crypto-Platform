@@ -214,7 +214,6 @@ void MerkelMain::processUserOption(int userOption)
 
 void MerkelMain::printOrderBookStats()
 {
-    OrderBook::testStats();
     std::cout << "Available products:" << std::endl;
     for (std::string const& p: orderBook.getKnownProducts())
     {

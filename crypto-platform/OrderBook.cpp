@@ -1,6 +1,7 @@
 #include <crypto-platform/OrderBook.h>
 #include <crypto-platform/OrderBookEntry.h>
 #include <crypto-platform/CSVReader.h>
+#include <numeric>
 #include <map>
 #include <set>
 
@@ -38,85 +39,20 @@ OrderBook::OrderBookEntryList OrderBook::getOrders(OrderBookType type,
 
 double OrderBook::getHighPrice(const OrderBook::OrderBookEntryList& orders)
 {
-    double max_price = orders[0].price;
-    for (auto& order: orders)
-    {
-        if (order.price > max_price) max_price = order.price;
-    }
-    return max_price;
+    return std::max_element(std::begin(orders), std::end(orders), 
+                            [](const auto& a, const auto& b) { return a.price < b.price; })->price;
 }
 
 double OrderBook::getLowPrice(const OrderBook::OrderBookEntryList& orders)
 {
-    double min_price = std::numeric_limits<decltype(orders[0].price)>::max();
-    for (auto& order: orders)
-    {
-        min_price = std::min(min_price, order.price);
-    }
-    return min_price;
+    return std::min_element(std::begin(orders), std::end(orders), 
+                            [](const auto& a, const auto& b) { return a.price < b.price; })->price;
 }
 
 double OrderBook::getAvgPrice(const OrderBook::OrderBookEntryList& orders)
 {
-    double sum_of_elements = 0;
-    int number_of_elements = orders.size();
-    for (auto order: orders)
-    {
-        sum_of_elements += order.price;
-    }
-    double average_price = sum_of_elements/number_of_elements;
-    return average_price;
-}
-
-void  OrderBook::testStats()
-{
-    int highPrice = 3;
-    int lowPrice = 1;
-    int avgPrice = 2;
-    int spread = 2;
-    OrderBook::OrderBookEntryList orders;
-    OrderBookEntry entry1("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,1,1);
-    OrderBookEntry entry2("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,2,1);
-    OrderBookEntry entry3("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,3,1);
-    orders.push_back(entry1);
-    orders.push_back(entry2);
-    orders.push_back(entry3);
-
-    std::cout << "\nTests:" << std::endl;
-
-    if (OrderBook::getHighPrice(orders) == highPrice)
-    {
-        std::cout << "High Price Test Passed." << std::endl;
-    }
-    else
-    {
-        std::cout << "High Price Test Failed." << std::endl;
-    }
-    if (OrderBook::getLowPrice(orders) == lowPrice)
-    {
-        std::cout << "Low Price Test Passed." << std::endl;
-    }
-    else
-    {
-        std::cout << "Low Price Test Failed." << std::endl;
-    }
-    if (OrderBook::getHighPrice(orders) - OrderBook::getLowPrice(orders) == spread)
-    {
-        std::cout << "Spread Price Test Passed." << std::endl;
-    }
-    else
-    {
-        std::cout << "Spread Price Test Failed." << std::endl;
-    }
-    if (OrderBook::getAvgPrice(orders) == avgPrice)
-    {
-        std::cout << "Avg Price Test Passed." << std::endl;
-    }
-    else
-    {
-        std::cout << "Avg Price Test Failed." << std::endl;
-    }
-
+    return std::accumulate(std::begin(orders), std::end(orders), 0.0,
+                           [&orders](const auto& currentValue, const auto& order) { return currentValue + order.price / orders.size(); });
 }
 
 std::string OrderBook::getEarliestTime()
