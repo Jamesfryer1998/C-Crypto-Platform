@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "crypto-platform/CSVReader.h"
+#include <crypto-platform/CSVReader.h>
 
 TEST(CSVReaderTest, BasicAssertions) {
     CSVReader reader;

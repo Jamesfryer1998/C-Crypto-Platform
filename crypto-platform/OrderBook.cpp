@@ -1,13 +1,28 @@
-#include "crypto-platform/OrderBook.h"
-#include "crypto-platform/OrderBookEntry.h"
-#include "crypto-platform/CSVReader.h"
+#include <crypto-platform/OrderBook.h>
+#include <crypto-platform/OrderBookEntry.h>
+#include <crypto-platform/CSVReader.h>
 #include <map>
 #include <set>
 
-OrderBook::OrderBook(const std::string& fileName)
+OrderBook::OrderBook(std::string fileName)
 {
     orders = CSVReader::readCSV(fileName);
 }
+
+// std::vector<std::string> OrderBook::getKnownProducts()
+// {
+//     std::vector<std::string> products;
+//     std::map<std::string, bool> prodMap;
+//     for (OrderBookEntry& order: orders)
+//     {
+//         prodMap[order.product] = true;
+//     }
+//     for (auto const& prod: prodMap)
+//     {
+//         products.push_back(prod.first);
+//     }
+//     return products;
+// }
 
 std::set<std::string> OrderBook::getKnownProducts()
 {
