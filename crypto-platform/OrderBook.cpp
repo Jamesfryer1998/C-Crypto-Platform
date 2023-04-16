@@ -9,24 +9,9 @@ OrderBook::OrderBook(std::string fileName)
     orders = CSVReader::readCSV(fileName);
 }
 
-// std::vector<std::string> OrderBook::getKnownProducts()
-// {
-//     std::vector<std::string> products;
-//     std::map<std::string, bool> prodMap;
-//     for (OrderBookEntry& order: orders)
-//     {
-//         prodMap[order.product] = true;
-//     }
-//     for (auto const& prod: prodMap)
-//     {
-//         products.push_back(prod.first);
-//     }
-//     return products;
-// }
-
-std::set<std::string> OrderBook::getKnownProducts()
+OrderBook::KnownProducts OrderBook::getKnownProducts()
 {
-    std::set<std::string> products;
+    KnownProducts products;
     std::for_each(std::begin(orders), std::end(orders), 
         [&products] (OrderBookEntry& order) {
             products.insert(order.product);

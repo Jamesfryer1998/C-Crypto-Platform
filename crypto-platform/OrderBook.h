@@ -9,10 +9,12 @@
 class OrderBook
 {
     public:
+        using KnownProducts = std::set<std::string>;
+
     /** construct, reading a csv data file */ 
         OrderBook(std::string fileName);
     /** return vector of all knwon products in dataset */ 
-        std::set<std::string> getKnownProducts();
+        KnownProducts getKnownProducts();
     /** return vector of Orders according to the sent filters */ 
         std::vector<OrderBookEntry> getOrders(OrderBookType type,
                                               std::string product, 
