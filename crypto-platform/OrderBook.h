@@ -10,15 +10,16 @@ class OrderBook
 {
     public:
         using KnownProducts = std::set<std::string>;
+        using OrderBookEntryList = std::vector<OrderBookEntry>;
 
     /** construct, reading a csv data file */ 
-        OrderBook(std::string fileName);
+        OrderBook(const std::string &fileName);
     /** return unordered collection of known products in the order book */ 
         KnownProducts getKnownProducts();
     /** return vector of Orders according to the sent filters */ 
-        std::vector<OrderBookEntry> getOrders(OrderBookType type,
-                                              std::string product, 
-                                              std::string timestamp);
+        OrderBookEntryList getOrders(OrderBookType type,
+                                     std::string product, 
+                                     std::string timestamp);
 
         /** Gets the first timestamp from the CSV */ 
         std::string getEarliestTime();
@@ -29,13 +30,13 @@ class OrderBook
 
         void insertOrder(OrderBookEntry& order);
 
-        std::vector<OrderBookEntry> matchSystem(std::string product, std::string timestamp);
+        OrderBookEntryList matchSystem(std::string product, std::string timestamp);
 
-        static double getHighPrice(std::vector<OrderBookEntry>& orders);
-        static double getLowPrice(std::vector<OrderBookEntry>& orders);
-        static double getAvgPrice(std::vector<OrderBookEntry>& orders);
+        static double getHighPrice(const OrderBook::OrderBookEntryList& orders);
+        static double getLowPrice(const OrderBook::OrderBookEntryList& orders);
+        static double getAvgPrice(const OrderBook::OrderBookEntryList& orders);
         static void testStats();
 
     private:
-        std::vector<OrderBookEntry> orders;
+        OrderBookEntryList orders;
 };

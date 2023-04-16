@@ -129,7 +129,7 @@ void MerkelMain::walletState()
 void MerkelMain::processTrade()
 {
     std::cout << "Processing trade..." << std::endl;
-    std::vector<OrderBookEntry> sales = orderBook.matchSystem("ETH/BTC", currentTime);
+    auto sales = orderBook.matchSystem("ETH/BTC", currentTime);
     std::cout << "No. Sales: " << sales.size() << std::endl;
     for (OrderBookEntry& sale: sales)
     {
@@ -219,7 +219,7 @@ void MerkelMain::printOrderBookStats()
     for (std::string const& p: orderBook.getKnownProducts())
     {
         std::cout << "- " << p;
-        std::vector<OrderBookEntry> askEntries = orderBook.getOrders(OrderBookType::ask,
+        auto askEntries = orderBook.getOrders(OrderBookType::ask,
                                                                   p,
                                                                   currentTime);
         std::cout << " - Asks seen: " << askEntries.size();
@@ -229,7 +229,7 @@ void MerkelMain::printOrderBookStats()
         std::cout << " | Avg Price: " << OrderBook::getAvgPrice(askEntries) << std::endl;
 
         std::cout << "- " << p;
-        std::vector<OrderBookEntry> bidEntries = orderBook.getOrders(OrderBookType::bid,
+        auto bidEntries = orderBook.getOrders(OrderBookType::bid,
                                                                   p,
                                                                   currentTime);
         std::cout << " - Bids seen: " << bidEntries.size();

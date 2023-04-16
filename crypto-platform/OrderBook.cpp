@@ -4,7 +4,7 @@
 #include <map>
 #include <set>
 
-OrderBook::OrderBook(std::string fileName)
+OrderBook::OrderBook(const std::string& fileName)
 {
     orders = CSVReader::readCSV(fileName);
 }
@@ -19,12 +19,12 @@ OrderBook::KnownProducts OrderBook::getKnownProducts()
     return products;
 }
 
-std::vector<OrderBookEntry> OrderBook::getOrders(OrderBookType type,
+OrderBook::OrderBookEntryList OrderBook::getOrders(OrderBookType type,
                                         std::string product, 
                                         std::string timestamp)
 {
-    std::vector<OrderBookEntry> orders_sub;
-    for (OrderBookEntry& order: orders)
+    OrderBookEntryList orders_sub;
+    for (auto& order: orders)
     {
         if (order.type == type &&
             order.product == product &&
@@ -36,27 +36,27 @@ std::vector<OrderBookEntry> OrderBook::getOrders(OrderBookType type,
     return orders_sub;
 }
 
-double OrderBook::getHighPrice(std::vector<OrderBookEntry>& orders)
+double OrderBook::getHighPrice(const OrderBook::OrderBookEntryList& orders)
 {
     double max_price = orders[0].price;
-    for (OrderBookEntry& order: orders)
+    for (auto& order: orders)
     {
         if (order.price > max_price) max_price = order.price;
     }
     return max_price;
 }
 
-double OrderBook::getLowPrice(std::vector<OrderBookEntry>& orders)
+double OrderBook::getLowPrice(const OrderBook::OrderBookEntryList& orders)
 {
     double min_price = orders[0].price;
-    for (OrderBookEntry& order: orders)
+    for (auto& order: orders)
     {
         if (order.price < min_price) min_price = order.price;
     }
     return min_price;
 }
 
-double OrderBook::getAvgPrice(std::vector<OrderBookEntry>& orders)
+double OrderBook::getAvgPrice(const OrderBook::OrderBookEntryList& orders)
 {
     double sum_of_elements = 0;
     int number_of_elements = orders.size();
@@ -74,7 +74,7 @@ void  OrderBook::testStats()
     int lowPrice = 1;
     int avgPrice = 2;
     int spread = 2;
-    std::vector<OrderBookEntry> orders;
+    OrderBook::OrderBookEntryList orders;
     OrderBookEntry entry1("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,1,1);
     OrderBookEntry entry2("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,2,1);
     OrderBookEntry entry3("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,3,1);
@@ -148,11 +148,11 @@ void OrderBook::insertOrder(OrderBookEntry& order)
     std::sort(orders.begin(), orders.end(), OrderBookEntry::comapreByTimeStamp);
 }
 
-std::vector<OrderBookEntry> OrderBook::matchSystem(std::string product, std::string timestamp)
+OrderBook::OrderBookEntryList OrderBook::matchSystem(std::string product, std::string timestamp)
 {
-    std::vector<OrderBookEntry> asks = getOrders(OrderBookType::ask, product, timestamp);
-    std::vector<OrderBookEntry> bids = getOrders(OrderBookType::bid, product, timestamp);
-    std::vector<OrderBookEntry> sales;
+    OrderBook::OrderBookEntryList asks = getOrders(OrderBookType::ask, product, timestamp);
+    OrderBook::OrderBookEntryList bids = getOrders(OrderBookType::bid, product, timestamp);
+    OrderBook::OrderBookEntryList sales;
 
     std::sort(asks.begin(), asks.end(), OrderBookEntry::comapareByPriceAsc);
     std::sort(bids.begin(), bids.end(), OrderBookEntry::comapareByPriceDesc);
