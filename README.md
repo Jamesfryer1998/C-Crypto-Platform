@@ -25,7 +25,7 @@ Once done, build the platform:
 
 Run the tests:
 ```
-ctest --test-dir build
+ctest --test-dir build --output-on-failure
 ```
 
 This will create an executable file `./build/apps/crypto-platform-app`
