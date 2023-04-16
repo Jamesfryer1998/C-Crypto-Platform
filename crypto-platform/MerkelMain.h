@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
-#include <crypto-platform/OrderBookEntry.h>
-#include <crypto-platform/OrderBook.h>
-#include <crypto-platform/Wallet.h>
-#include <crypto-platform/AutoTrader.h>
+#include "crypto-platform/OrderBookEntry.h"
+#include "crypto-platform/OrderBook.h"
+#include "crypto-platform/Wallet.h"
+#include "crypto-platform/AutoTrader.h"
 
 class MerkelMain
 {
