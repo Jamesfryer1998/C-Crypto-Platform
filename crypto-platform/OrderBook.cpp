@@ -48,10 +48,10 @@ double OrderBook::getHighPrice(const OrderBook::OrderBookEntryList& orders)
 
 double OrderBook::getLowPrice(const OrderBook::OrderBookEntryList& orders)
 {
-    double min_price = orders[0].price;
+    double min_price = std::numeric_limits<decltype(orders[0].price)>::max();
     for (auto& order: orders)
     {
-        if (order.price < min_price) min_price = order.price;
+        min_price = std::min(min_price, order.price);
     }
     return min_price;
 }
