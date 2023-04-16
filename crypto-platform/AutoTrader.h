@@ -1,6 +1,7 @@
 #pragma once
 
-#include "OrderBook.h"
+#include <crypto-platform/OrderBook.h>
+#include <crypto-platform/Wallet.h>
 #include <vector>
 #include <string>
 #include <map>
@@ -11,23 +12,28 @@ class AutoTrader{
         AutoTrader();
         void callAutoTrader();
         void autoTradeMenu();
-        int getUserOption(bool verbose=true);
         void processUserOption(int userOption);
+ 
 
     private:
-        std::vector<std::string> availableCurrencies;
         OrderBook orderBook{"20200317.csv"}; // This should be moves, 
                                              // we load this in the MerkelMain
-        int stopLossOption;
-        int roi;
+
+        Wallet wallet;
         std::map<std::string, double> currMap;
 
+        int stopLossOption;
+        int roi;
+        bool isAutoTraderRunning = false;
+
+        int getUserOption(bool verbose=true);
+
         void invalidChoice();
+        void currencySelectionNew();
         void currencySelection();
         int stopLoss();
         int ROI();
         void autoStart();
         void autoStop();
-        bool autoDetermineEnd();
-
+        bool determineEnd();
 };

@@ -1,6 +1,6 @@
-#include "AutoTrader.h"
-#include "OrderBook.h"
-#include "CSVReader.h"
+#include <crypto-platform/AutoTrader.h>
+#include <crypto-platform/OrderBook.h>
+#include <crypto-platform/CSVReader.h>
 
 #include <iostream>
 #include <vector>
@@ -18,11 +18,10 @@ void AutoTrader::callAutoTrader()
     {
         AutoTrader::autoTradeMenu();
         int userOption;
-        userOption = AutoTrader::getUserOption();
+        userOption = getUserOption();
         AutoTrader::processUserOption(userOption);
         if (userOption == 6) break;
     }
-
 }
 
 void AutoTrader::autoTradeMenu()
@@ -64,7 +63,7 @@ void AutoTrader::processUserOption(int userOption)
     }
     if (userOption == 1)
     {
-        AutoTrader::currencySelection();
+        AutoTrader::currencySelectionNew();
     }
     if (userOption == 2)
     {
@@ -93,9 +92,44 @@ void AutoTrader::invalidChoice()
     std::cout << "Invalid Choice. Please seletct a number from 1-6." << std::endl;
 }
 
+void AutoTrader::currencySelectionNew()
+{
+    // 1. Promot the user to enter a currency and amount
+    // 2. Check if this currency is in wallet (tokenise their answer, and use tokens[0])
+    // 3. If TRUE when add the currency to the list
+    // 4. If false then call invalidChoice() and ask to try again
+
+    std::cout << "Please enter a currency you wish to trade with: (USDT,1000) '/'  to exit" << std::endl;
+
+    while (true)
+    {
+        std::string currencyInput;
+        std::getline(std::cin, currencyInput);
+        std::vector<std::string> tokens = CSVReader::tokenise(currencyInput, ',');
+
+        if (currencyInput == "/") break;
+        if (tokens.size()!= 2) std::cout << "Invalid Input." << std::endl;
+        else
+        {
+            std::cout << tokens[0] << std::endl;
+            double currencyAmount = std::stod(tokens[1]);
+            bool walletContains = wallet.containsCurrency(tokens[0], currencyAmount);
+
+            if (walletContains == false)
+            {
+                std::cout << "Insuficient funds for " << tokens[0] << " in wallet." << std::endl;
+            }
+            else
+            {
+                if(currMap.count(tokens[0])) continue;
+                else currMap.insert({tokens[0], currencyAmount});
+            }
+        }
+    }
+}
+
 void AutoTrader::currencySelection()
 {
-    std::map<std::string, double> currMap;
     std::cout << "\nAvailable currencies, enter your amount or '/' to skip:"  << std::endl;
 
     for (std::string const& p: orderBook.getKnownProducts())
@@ -106,31 +140,11 @@ void AutoTrader::currencySelection()
         if (string == "/") continue;
         else
         {
-            currMap.insert({p, std::stod(string)});
+            if(currMap.count(p)) continue;
+            else currMap.insert({p, std::stod(string)});
         }
-
     }
 
-    std::cout << "\nCurrencies successfully entered." << std::endl;
-
-    // while (true)
-    // {
-
-    //     std::string string;
-    //     std::getline(std::cin, string);
-    //     if (string.length() < 2)
-    //     {
-    //         std::cout << "Invalid input.\n" << std::endl;
-    //         break;
-    //     }
-
-    //     std::vector<std::string> tokens = CSVReader::tokenise(string, ',');
-    //     if (std::stoi(tokens[1]))
-    //     {
-    //         currMap.insert({tokens[0], std::stod(tokens[1])});
-    //     }
-        
-    // }
 
     for(const auto& key_value: currMap) {
         std::string key = key_value.first;
@@ -138,19 +152,40 @@ void AutoTrader::currencySelection()
         
         std::cout << key << " - " << value << std::endl;
     }
+
+    std::cout << "\nCurrencies successfully entered." << std::endl;
 }
 
 int AutoTrader::stopLoss()
 {
+    /** Calculate final wallet amount from stop loss perfentage */ 
     std::cout << "Please enter your prefered % stop loss: ";
-    stopLossOption = AutoTrader::getUserOption(false);
+    stopLossOption = getUserOption(false);
+
+    std::map<std::string, double> lossMap;
+
+    // std::map<std::string, double> currMap = currencySelection();
+
+    for(const auto& key_value: currMap) {
+        std::string product = key_value.first;
+
+        // Check if currency is in wallet first
+
+        // Insert product and final wallet value into map
+        // currMap.insert({product, calculated wallet value);
+
+        
+        std::cout << product << std::endl;
+    }
+
     return 0;
 }
 
 int AutoTrader::ROI()
 {
+    /** Calculate final wallet about from ROI percentage */ 
     std::cout << "Please enter your prefered % ROI: ";
-    roi = AutoTrader::getUserOption(false);
+    roi = getUserOption(false);
     return 0;
 }
 
@@ -162,15 +197,25 @@ void AutoTrader::autoStart()
      * Once ROI reaches, exit
      * Return the wallet amount at the end along with number of trades made
      * (May need a separte cpp for stratergies etc)*/ 
-    
+    std::cout << "Start activate" << std::endl;
+    isAutoTraderRunning = true;
+    while (isAutoTraderRunning)
+    {
+        AutoTrader::autoStop();
+        // Code that runs the auto trader program
+    }
+    std::cout << "Start stopped" << std::endl;
 }
 
 void AutoTrader::autoStop()
 {
-
+    isAutoTraderRunning = false;
 }
 
-bool AutoTrader::autoDetermineEnd()
+bool AutoTrader::determineEnd()
 {
+    /** When suitable end found
+     * - either stop loss reached
+     * - or, ROI achieved*/ 
     return false;
 }

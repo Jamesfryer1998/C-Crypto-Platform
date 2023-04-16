@@ -1,5 +1,5 @@
-#include "Wallet.h"
-#include "CSVReader.h"
+#include <crypto-platform/Wallet.h>
+#include <crypto-platform/CSVReader.h>
 #include <iostream>
 
 Wallet::Wallet()
@@ -62,10 +62,13 @@ bool Wallet::removeCurrency(std::string type, double amount)
 bool Wallet::containsCurrency(std::string type, double amount)
 {
     if (currencies.count(type) == 0)
+    {
         return false;
+    }
     else 
         return currencies[type] >= amount;
 }
+
 
 std::string Wallet::toString()
 {   
