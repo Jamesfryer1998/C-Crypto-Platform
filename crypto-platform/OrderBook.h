@@ -13,7 +13,7 @@ class OrderBook
 
     /** construct, reading a csv data file */ 
         OrderBook(std::string fileName);
-    /** return vector of all knwon products in dataset */ 
+    /** return unordered collection of known products in the order book */ 
         KnownProducts getKnownProducts();
     /** return vector of Orders according to the sent filters */ 
         std::vector<OrderBookEntry> getOrders(OrderBookType type,
