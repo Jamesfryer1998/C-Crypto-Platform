@@ -41,7 +41,8 @@ std::vector<std::string> CSVReader::tokenise(std::string csvLine, char separator
 {
     std::vector<std::string> tokens;
     
-    double start, end;
+    // double start, end;
+    std::string::size_type start, end;
     std::string token;
     start = csvLine.find_first_not_of(separator, 0);
 

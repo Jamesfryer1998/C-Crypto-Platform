@@ -20,7 +20,6 @@ class MerkelMain
         void makeBid();
         void walletState();
         void processTrade();
-        // void callAutoTrader();
         void invalidChoice();
         int getUserOption();
         void processUserOption(int userOption);

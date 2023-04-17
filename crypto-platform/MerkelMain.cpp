@@ -17,6 +17,7 @@ void MerkelMain::init()
     int userOption;
     currentTime = orderBook.getEarliestTime();
     wallet.insertCurrency("BTC", 10);
+    std::cout << wallet.containsCurrency("BTC", 1) << std::endl;
     while (true)
     {
         printMenu();
@@ -203,7 +204,7 @@ void MerkelMain::processUserOption(int userOption)
 
     if (userOption == 7)
     {
-        autoTrade.callAutoTrader();
+        autoTrade.callAutoTrader(wallet);
     }
 
     if (userOption > 7) // bad input

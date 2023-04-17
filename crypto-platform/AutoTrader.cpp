@@ -11,8 +11,9 @@ AutoTrader::AutoTrader()
 
 }
 
-void AutoTrader::callAutoTrader()
+void AutoTrader::callAutoTrader(Wallet walletInput)
 {
+    wallet = walletInput;
     system("clear");
     while (true)
     {
@@ -94,10 +95,10 @@ void AutoTrader::invalidChoice()
 
 void AutoTrader::currencySelectionNew()
 {
-    // 1. Promot the user to enter a currency and amount
-    // 2. Check if this currency is in wallet (tokenise their answer, and use tokens[0])
-    // 3. If TRUE when add the currency to the list
-    // 4. If false then call invalidChoice() and ask to try again
+    /** 1. Promot the user to enter a currency and amount
+     * 2. Check if this currency is in wallet (tokenise their answer, and use tokens[0])
+     * 3. If TRUE when add the currency to the list
+     * 4. If false then call invalidChoice() and ask to try again */ 
 
     std::cout << "Please enter a currency you wish to trade with: (USDT,1000) '/'  to exit" << std::endl;
 
@@ -111,13 +112,12 @@ void AutoTrader::currencySelectionNew()
         if (tokens.size()!= 2) std::cout << "Invalid Input." << std::endl;
         else
         {
-            std::cout << tokens[0] << std::endl;
             double currencyAmount = std::stod(tokens[1]);
             bool walletContains = wallet.containsCurrency(tokens[0], currencyAmount);
 
-            if (walletContains == false)
+            if (walletContains == 0)
             {
-                std::cout << "Insuficient funds for " << tokens[0] << " in wallet." << std::endl;
+                std::cout << "Insuficient amount of " << tokens[0] << " in wallet." << std::endl;
             }
             else
             {
@@ -128,36 +128,36 @@ void AutoTrader::currencySelectionNew()
     }
 }
 
-void AutoTrader::currencySelection()
-{
-    std::cout << "\nAvailable currencies, enter your amount or '/' to skip:"  << std::endl;
+// void AutoTrader::currencySelection()
+// {
+//     std::cout << "\nAvailable currencies, enter your amount or '/' to skip:"  << std::endl;
 
-    for (std::string const& p: orderBook.getKnownProducts())
-    {
-        std::cout << "-" << p << ": ";
-        std::string string;
-        std::getline(std::cin, string);
-        if (string == "/") continue;
-        else
-        {
-            if(currMap.count(p)) continue;
-            else currMap.insert({p, std::stod(string)});
-        }
-    }
+//     for (std::string const& p: orderBook.getKnownProducts())
+//     {
+//         std::cout << "-" << p << ": ";
+//         std::string string;
+//         std::getline(std::cin, string);
+//         if (string == "/") continue;
+//         else
+//         {
+//             if(currMap.count(p)) continue;
+//             else currMap.insert({p, std::stod(string)});
+//         }
+//     }
 
-
-    for(const auto& key_value: currMap) {
-        std::string key = key_value.first;
-        int value = key_value.second;
+//     for(const auto& key_value: currMap) {
+//         std::string key = key_value.first;
+//         int value = key_value.second;
         
-        std::cout << key << " - " << value << std::endl;
-    }
+//         std::cout << key << " - " << value << std::endl;
+//     }
 
-    std::cout << "\nCurrencies successfully entered." << std::endl;
-}
+//     std::cout << "\nCurrencies successfully entered." << std::endl;
+// }
 
 int AutoTrader::stopLoss()
 {
+    // TODO:
     /** Calculate final wallet amount from stop loss perfentage */ 
     std::cout << "Please enter your prefered % stop loss: ";
     stopLossOption = getUserOption(false);
@@ -183,6 +183,7 @@ int AutoTrader::stopLoss()
 
 int AutoTrader::ROI()
 {
+    // TODO:
     /** Calculate final wallet about from ROI percentage */ 
     std::cout << "Please enter your prefered % ROI: ";
     roi = getUserOption(false);
