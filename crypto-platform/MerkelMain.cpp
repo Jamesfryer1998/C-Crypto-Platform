@@ -17,6 +17,8 @@ void MerkelMain::init()
     int userOption;
     currentTime = orderBook.getEarliestTime();
     wallet.insertCurrency("BTC", 10);
+    wallet.insertCurrency("ETH", 10);
+    wallet.insertCurrency("LTC", 10);
     std::cout << wallet.containsCurrency("BTC", 1) << std::endl;
     while (true)
     {

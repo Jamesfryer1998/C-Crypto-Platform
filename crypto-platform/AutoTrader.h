@@ -26,8 +26,8 @@ class AutoTrader{
         int stopLossOption;
         bool isAutoTraderRunning = false;
 
-        int ROI();
-        int stopLoss();
+        void ROI();
+        void stopLoss();
         void autoStop();
         void autoStart();
         bool determineEnd();

@@ -30,8 +30,8 @@ void AutoTrader::autoTradeMenu()
     std::cout << "Welcome to the Automatic Trading system." << std::endl;
     std::cout << "Please select an option below:\n" << std::endl;
     std::cout << "1: Select currencies and amount:" << std::endl;
-    std::cout << "2: Stop Loss" << std::endl;
-    std::cout << "3: Expected Returns" << std::endl;
+    std::cout << "2: Stop Loss %" << std::endl;
+    std::cout << "3: Expected Returns (ROI) %" << std::endl;
     std::cout << "4: Start Auto Trader" << std::endl;
     std::cout << "5: Stop Auto Trader" << std::endl;
     std::cout << "6: <--Return " << std::endl;
@@ -155,7 +155,7 @@ void AutoTrader::currencySelectionNew()
 //     std::cout << "\nCurrencies successfully entered." << std::endl;
 // }
 
-int AutoTrader::stopLoss()
+void AutoTrader::stopLoss()
 {
     // TODO:
     /** Calculate final wallet amount from stop loss perfentage */ 
@@ -168,27 +168,29 @@ int AutoTrader::stopLoss()
 
     for(const auto& key_value: currMap) {
         std::string product = key_value.first;
-
-        // Check if currency is in wallet first
-
-        // Insert product and final wallet value into map
-        // currMap.insert({product, calculated wallet value);
-
-        
-        std::cout << product << std::endl;
+        double finalAmount = key_value.second * (100 - stopLossOption)/100;
+        lossMap.insert({product, finalAmount});
+        std::cout << product << " : " << finalAmount << std::endl;
     }
-
-    return 0;
 }
 
-int AutoTrader::ROI()
+void AutoTrader::ROI()
 {
     // TODO:
     /** Calculate final wallet about from ROI percentage */ 
     std::cout << "Please enter your prefered % ROI: ";
     roi = getUserOption(false);
-    return 0;
+
+    std::map<std::string, double> roiMap;
+
+    for(const auto& key_value: currMap) {
+        std::string product = key_value.first;
+        double finalAmount = key_value.second * (100 + stopLossOption)/100;
+        roiMap.insert({product, finalAmount});
+        std::cout << product << " : " << finalAmount << std::endl;
+    }
 }
+
 
 void AutoTrader::autoStart()
 {
