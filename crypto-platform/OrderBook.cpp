@@ -40,6 +40,25 @@ std::vector<OrderBookEntry> OrderBook::getOrders(OrderBookType type,
     return orders_sub;
 }
 
+std::vector<OrderBookEntry> OrderBook::getOrdersOfCurrency(OrderBookType type,
+                                        std::string product, 
+                                        std::string timestamp)
+{
+    std::vector<std::string> products = CSVReader::tokenise(product, '/');
+    std::vector<OrderBookEntry> orders_sub;
+    for (OrderBookEntry& order: orders)
+    {
+        std::vector<std::string> orderProducts = CSVReader::tokenise(order.product, '/');
+        if (order.type == type &&
+            orderProducts[0] == products[0] &&
+            order.timestamp == timestamp)
+            {
+                orders_sub.push_back(order);
+            }
+    }
+    return orders_sub;
+}
+
 double OrderBook::getHighPrice(std::vector<OrderBookEntry>& orders)
 {
     double max_price = orders[0].price;
@@ -64,7 +83,7 @@ double OrderBook::getAvgPrice(std::vector<OrderBookEntry>& orders)
 {
     double sum_of_elements = 0;
     int number_of_elements = orders.size();
-    for (auto order: orders)
+    for (auto& order: orders)
     {
         sum_of_elements += order.price;
     }
@@ -149,6 +168,14 @@ std::string OrderBook::getNextTime(std::string timestamp)
 void OrderBook::insertOrder(OrderBookEntry& order)
 {
     orders.push_back(order);
+    std::sort(orders.begin(), orders.end(), OrderBookEntry::comapreByTimeStamp);
+}
+
+void OrderBook::removeOrder(OrderBookEntry& order)
+{
+    // TODO: Ask Andy, Do i need to remove orders? Or keep track of ones that have been processed
+    orders.pop_back();
+    std::cout << order.price << " - This is a test in OrderBook::removeOrder" << std::endl;
     std::sort(orders.begin(), orders.end(), OrderBookEntry::comapreByTimeStamp);
 }
 

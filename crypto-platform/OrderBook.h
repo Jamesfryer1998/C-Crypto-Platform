@@ -17,6 +17,10 @@ class OrderBook
                                               std::string product, 
                                               std::string timestamp);
 
+        std::vector<OrderBookEntry> getOrdersOfCurrency(OrderBookType type,
+                                              std::string product, 
+                                              std::string timestamp);
+
         /** Gets the first timestamp from the CSV */ 
         std::string getEarliestTime();
         /** returns the next time after the sent time in the orderBook.
@@ -25,6 +29,7 @@ class OrderBook
         std::string getNextTime(std::string timestamp);
 
         void insertOrder(OrderBookEntry& order);
+        void removeOrder(OrderBookEntry& order);
 
         std::vector<OrderBookEntry> matchSystem(std::string product, std::string timestamp);
 

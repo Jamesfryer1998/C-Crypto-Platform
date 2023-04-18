@@ -34,5 +34,5 @@ class MerkelMain
 
         Wallet wallet;
 
-        AutoTrader autoTrade;
+        AutoTrader autoTrade{orderBook};
 };
