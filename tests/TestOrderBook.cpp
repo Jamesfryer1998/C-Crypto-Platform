@@ -198,3 +198,4 @@ TEST(OrderBook2Test, TestOrderCancel)
     // and there's no price level
     EXPECT_FALSE(orderBook.hasPriceLevel(OrderBook2::Side::bid, OrderBook2::Price{3}));
 }
+
