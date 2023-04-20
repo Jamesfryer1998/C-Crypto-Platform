@@ -14,6 +14,9 @@ class OrderBook
 
     /** construct, reading a csv data file */ 
         OrderBook(const std::string &fileName);
+
+    /** construct, using an existing order book entry list*/
+        OrderBook(const OrderBookEntryList& orders): orders(orders) {}
     /** return unordered collection of known products in the order book */ 
         KnownProducts getKnownProducts();
     /** return vector of Orders according to the sent filters */ 
