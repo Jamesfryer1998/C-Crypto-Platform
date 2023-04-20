@@ -188,10 +188,10 @@ void AutoTrader::autoAsk(std::string product, std::string timestamp)
             orderBook.insertOrder(OBE);
 
             tradeCurrMap[product] -= amountToTrade;
-            // tradeCount ++;
+            tradeCount ++;
 
             // TODO: 
-            // 1. Will need to remove order from order book once trade processed
+            // 1. Will need to remove order from order book once trade processed (OrderBook::removeOrder())
             // 2. Duduct the traded amount from the currMap
             // 3. Count the trade in a variable
         }

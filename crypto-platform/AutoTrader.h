@@ -19,15 +19,14 @@ class AutoTrader{
     private:
         Wallet wallet;
         // OrderBook orderBook{"20200317.csv"}; // This should be moved, we load this in the MerkelMain
-        // FIXME: How can I get the order book from MerkelMain?? 
-        // - If I load this in there I will have a plain OrderBook do I want that?
 
         std::map<std::string, double> currMap;
         std::map<std::string, double> tradeCurrMap; // Probs need to change these variables,
         std::map<std::string, double> lossMap; // find a neater way to organise everything
         std::map<std::string, double> roiMap;
 
-        int numberTrades = 1000; // Hard coded for now, allow a user input
+        int numberTrades = 1000; 
+        int tradeCount = 0;// Hard coded for now, allow a user input
         int roi;
         int stopLossOption;
         bool isAutoTraderRunning = false;
@@ -38,7 +37,6 @@ class AutoTrader{
         void autoStart();
         bool determineEnd();
         void invalidChoice();
-        // void currencySelection();
         void currencySelectionNew();
         int getUserOption(bool verbose=true);
         void autoAsk(std::string product, std::string timestamp);
