@@ -136,7 +136,7 @@ namespace OrderBook2
         std::pair<OrderID, bool> insert(Side side, Price price, Qty amount, Timestamp timestamp, const Client &client)
         {
             OrderID id{nextID++};
-            assert(!orders.contains(nextID));
+            assert(!orders.contains(id));
             auto [it, _] {orders.try_emplace(/* key */id, /* order */ id, side, price, amount, client, timestamp)};
             lastTrades.clear();
             auto& aggressingOrder{it->second};
