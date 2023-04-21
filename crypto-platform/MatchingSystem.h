@@ -10,12 +10,9 @@ class MatchSystem{
         void init();
         OrderBookEntry csvStringToOBE(std::vector<std::string> tokens);
         std::vector<std::string> tokenise(std::string csvLine, char separator);
-        void readCSV_NEW(std::string fileName);
-        void matchEngine(std::vector<OrderBookEntry>& bids,
-                         std::vector<OrderBookEntry>& asks);
-
-        std::vector<OrderBookEntry> createAsks();
-        std::vector<OrderBookEntry> createBids();
+        int readCSV_NEW(std::string fileName);
+        std::vector<std::pair<OrderBookEntry, OrderBookEntry>> matchEngine(OrderBookEntry bid_order);
+        std::vector<std::pair<OrderBookEntry, OrderBookEntry>> testMatch(bool size);
 
     private:
         std::map<std::string, std::map<std::string,

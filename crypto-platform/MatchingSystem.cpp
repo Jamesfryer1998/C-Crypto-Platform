@@ -30,11 +30,10 @@ Trades::Trades( std::string _timestamp,
 void MatchSystem::init()
 {
     MatchSystem::readCSV_NEW("20200317.csv");
-    // std::vector<OrderBookEntry> asks = MatchSystem::createAsks();
-    // std::vector<OrderBookEntry> bids = MatchSystem::createBids()
-
-    // FIXME: Why is this not working?
-    MatchSystem::matchEngine(MatchSystem::createAsks(), MatchSystem::createBids());
+    std::vector<OrderBookEntry> orders;
+    OrderBookEntry entry1("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,1,1);
+    orders.push_back(entry1);
+    MatchSystem::matchEngine(orders[0]);
 }
 
 OrderBookEntry MatchSystem::csvStringToOBE(std::vector<std::string> tokens)
@@ -80,14 +79,12 @@ std::vector<std::string> MatchSystem::tokenise(std::string csvLine, char separat
     return tokens;
 }
 
-void MatchSystem::readCSV_NEW(std::string fileName)
+int MatchSystem::readCSV_NEW(std::string fileName)
 {
-    std::ifstream csvFile{fileName};
+    int loadCount = 0;
     std::string line;
+    std::ifstream csvFile{fileName};
     std::vector<std::string> tokens;
-
-    std::vector<std::string> products;
-    std::map<std::string, bool> prodMap;
 
     if (csvFile.is_open())
     {
@@ -103,11 +100,13 @@ void MatchSystem::readCSV_NEW(std::string fileName)
                 if (tokens[2] == "ask")
                 {
                     allOrders[tokens[1]]["orderType"]["ask"].push_back(OBE);
+                    loadCount++;
                 }
                 // bids
                 else
                 {
                     allOrders[tokens[1]]["orderType"]["bid"].push_back(OBE);
+                    loadCount++;
                 }
             }catch(const std::exception& e)
             {
@@ -116,6 +115,7 @@ void MatchSystem::readCSV_NEW(std::string fileName)
         }
     }
 
+    // Sorting vectors
     std::string key;
     for (auto& keyValue: allOrders)
     {
@@ -132,61 +132,109 @@ void MatchSystem::readCSV_NEW(std::string fileName)
         allOrders[key]["orderType"]["bid"].end(),
         OrderBookEntry::comapareByPriceAsc);
     }
-    std::cout << "MatchSystem::readCSV read" << allOrders["ETH/BTC"]["orderType"]["ask"].size() << "files" << std::endl;
+    std::cout << "MatchSystem::readCSV read" << loadCount << "files" << std::endl;
+
+    return loadCount;
 } 
 
-std::vector<OrderBookEntry> MatchSystem::createBids()
-{
-    std::vector<OrderBookEntry> bids;
-    bids.push_back(OrderBookEntry("2020/03/17 17:01:24.884492",
-                                  "BTC/ETH", OrderBookType::bid, 
-                                  7.44564869, 0.02187308));
-    bids.push_back(OrderBookEntry("2020/03/17 17:01:24.884492",
-                                  "BTC/ETH", OrderBookType::bid, 
-                                  7.44564869, 0.03187308));
-    bids.push_back(OrderBookEntry("2020/03/17 17:01:24.884492",
-                                  "BTC/ETH", OrderBookType::bid, 
-                                  7.44564869, 0.04187308));
-    bids.push_back(OrderBookEntry("2020/03/17 17:01:24.884492",
-                                  "BTC/ETH", OrderBookType::bid, 
-                                  7.44564869, 0.05187308));
-    bids.push_back(OrderBookEntry("2020/03/17 17:01:24.884492",
-                                  "BTC/ETH", OrderBookType::bid, 
-                                  7.44564869, 0.06187308));
-    return bids;
-}
 
-std::vector<OrderBookEntry> MatchSystem::createAsks()
+// Function to match a single bid order with an ask order using price-time priority
+std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(OrderBookEntry order)
 {
-    std::vector<OrderBookEntry> asks;
-    asks.push_back(OrderBookEntry("2020/03/17 17:01:24.884492",
-                                  "ETH/BTC", OrderBookType::ask, 
-                                  0.02187308,7.44564869));
-    asks.push_back(OrderBookEntry("2020/03/17 17:01:24.884492",
-                                  "ETH/BTC", OrderBookType::ask, 
-                                  0.03187308,7.44564869));
-    asks.push_back(OrderBookEntry("2020/03/17 17:01:24.884492",
-                                  "ETH/BTC", OrderBookType::ask, 
-                                  0.04187308,7.44564869));
-    asks.push_back(OrderBookEntry("2020/03/17 17:01:24.884492",
-                                  "ETH/BTC", OrderBookType::ask, 
-                                  0.05187308,7.44564869));
-    asks.push_back(OrderBookEntry("2020/03/17 17:01:24.884492",
-                                  "ETH/BTC", OrderBookType::ask, 
-                                  0.06187308,7.44564869));
-    return asks;
-}
+    double price = order.price;
+    double amount = order.amount;
+    OrderBookType type = order.type;
+    std::string product = order.product;
+    std::string timestamp = order.timestamp;
+    std::cout << timestamp << std::endl;
 
-void MatchSystem::matchEngine(std::vector<OrderBookEntry>& bids,
-                              std::vector<OrderBookEntry>& asks)
-{
-    std::string key;
-    for (auto& bid: bids)
+    std::vector<std::pair<OrderBookEntry, OrderBookEntry>> matched_orders;
+
+    // If order is a bid, check the asks
+    if (type == OrderBookType::bid)
     {
-        key = bid.product;
+        if (allOrders[product]["orderType"]["ask"].size() > 0)
+        {
+            std::vector<OrderBookEntry>& askOrders = allOrders[product]["orderType"]["ask"];
 
-        std::vector<OrderBookEntry> allOrderAsks = allOrders[key]["orderType"]["ask"];
-        std::cout << allOrderAsks[0].product << std::endl;
-
+            for (unsigned long i = 0; i <  askOrders.size(); i++)
+            {
+                OrderBookEntry& singleAsk = askOrders[i];
+                if (singleAsk.price <= price)
+                {
+                    double matchAmount = std::min(amount, singleAsk.amount);
+                    OrderBookEntry OBE1(timestamp, product, type, amount, price);
+                    OrderBookEntry OBE2(singleAsk.timestamp, singleAsk.product,
+                                        singleAsk.type, singleAsk.amount, singleAsk.price);
+                    
+                    matched_orders.push_back(std::make_pair(OBE1, OBE2));
+                    amount -= matchAmount;
+                    singleAsk.amount -= matchAmount;
+                    if (singleAsk.amount == 0)
+                    {
+                        askOrders.erase(askOrders.begin() + i);
+                        i--;
+                    }
+                    if (amount <= 0) break;
+                }
+            }
+        }
     }
+
+    // If order is a ask, check the bids
+    if (type == OrderBookType::ask)
+    {
+        if (allOrders[product]["orderType"]["bid"].size() > 0)
+        {
+            std::vector<OrderBookEntry>& bidOrders = allOrders[product]["orderType"]["bid"];
+
+            for (unsigned long i = 0; i < bidOrders.size(); i++)
+            {
+                OrderBookEntry& singleBid = bidOrders[i];
+                if (singleBid.price >= price)
+                {
+                    double matchAmount = std::min(amount, singleBid.amount);
+                    OrderBookEntry OBE1(timestamp, product, type, amount, price);
+                    OrderBookEntry OBE2(singleBid.timestamp, singleBid.product,
+                                        singleBid.type, singleBid.amount, singleBid.price);
+                    
+                    matched_orders.push_back(std::make_pair(OBE2, OBE1));
+                    amount -= matchAmount;
+                    singleBid.amount -= matchAmount;
+                    if (singleBid.amount == 0)
+                    {
+                        bidOrders.erase(bidOrders.begin() + i);
+                        i--;
+                    }
+                    if (amount <= 0) break;
+                }
+            }
+        }
+    }
+    std::cout << "Matched orders number: " << matched_orders.size() << std::endl; 
+
+    // TODO: - Add the fullfilled ordered to a trades vector
+    // Find a better way to match, we are still looping through the vectors
+
+    return matched_orders;
+}
+
+std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::testMatch(bool size)
+{
+    MatchSystem::readCSV_NEW("20200317.csv");
+    std::vector<OrderBookEntry> orders;
+    // Large order, guaranteed match
+    if (size == true) 
+    {
+        OrderBookEntry entry("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,1,1);
+        orders.push_back(entry);
+    }
+    if (size == false)
+    {
+        OrderBookEntry entry("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,0,0);
+        orders.push_back(entry);
+    }
+
+    std::vector<std::pair<OrderBookEntry, OrderBookEntry>> matches = MatchSystem::matchEngine(orders[0]);
+    return matches;
 }
