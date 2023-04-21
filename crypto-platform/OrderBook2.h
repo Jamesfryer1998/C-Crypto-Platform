@@ -271,7 +271,7 @@ namespace OrderBook2
             {
                 Side passiveSide{oppositeSide(aggressingOrder.side)};
                 OrderQueue &passiveOrders{passiveSide == Side::ask ? asks.begin()->second : bids.begin()->second};
-                // No orders on side
+                // If no orders on side break
                 if (!passiveOrders.size())
                     break;
                 Price insidePassivePrice{passiveSide == Side::ask ? asks.begin()->first : bids.begin()->first};
