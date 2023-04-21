@@ -286,6 +286,7 @@ namespace OrderBook2
                 Qty matchAmount{std::min(aggressingOrder.amount, passive->amount)};
                 aggressingOrder.amount -= matchAmount;
                 passive->amount -= matchAmount;
+                // We only publish trades for the passive orders
                 lastTrades.emplace_back(passive->id, nextExecID++, passive->side, passive->price, matchAmount);
                 if (passive->amount == 0)
                 {
