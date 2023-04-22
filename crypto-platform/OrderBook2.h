@@ -127,18 +127,20 @@ namespace OrderBook2
             else
                 return asks.find(price) != asks.end();
         }
+        using Trades = std::vector<Trade>;
+
 
         // Insert a new order, may cross the book and generate trades.
         // Returns The orderID and whether it's a fully filled order. 
         // Note:(1) price-time priority is not impacted by the timestamp, any order inserted
         //          after another one has lower time priority. The timestamp is simply a record.
         //     :(2) Orders that are fully filled are implicitly cancelled and removed from the book.
-        std::pair<OrderID, bool> insert(Side side, Price price, Qty amount, Timestamp timestamp, const Client &client)
+        std::tuple<OrderID, bool, Trades> insert(Side side, Price price, Qty amount, Timestamp timestamp, const Client &client)
         {
             OrderID id{nextID++};
             assert(!orders.contains(id));
             auto [it, _] {orders.try_emplace(/* key */id, /* order */ id, side, price, amount, client, timestamp)};
-            lastTrades.clear();
+            trades.clear();
             auto& aggressingOrder{it->second};
             if (cross(aggressingOrder))
             {
@@ -146,12 +148,12 @@ namespace OrderBook2
                 orders.erase(orders.find(id));
                 // Release nextID we allocated
                 nextID--;
-                return {id, true};
+                return {id, true, trades};
             }
             else // Remaing qty on the order so add to a price level
             {
                 assert(aggressingOrder.amount > 0);
-                if (lastTrades.size() == 0)
+                if (trades.size() == 0)
                 {
                     if (aggressingOrder.side == Side::bid)
                         insertIntoPriceLevel(bids, aggressingOrder);
@@ -168,7 +170,7 @@ namespace OrderBook2
                 }
             }
 
-            return {aggressingOrder.id, false};
+            return {aggressingOrder.id, false, trades};
         }
 
         // Cancel the order and return true if cancelled
@@ -183,14 +185,6 @@ namespace OrderBook2
                     : eraseFromPriceLevel(asks, orderIter->second.price, orderIter->second.id)};
             orders.erase(orderIter);
             return result;
-        }
-
-        using Trades = std::vector<Trade>;
-
-        // Get the trades generated (if any) from the last insert operation
-        const Trades &getLastTrades()
-        {
-            return lastTrades;
         }
 
         // Debug dump of bids, asks and the order map
@@ -265,7 +259,7 @@ namespace OrderBook2
         // Returns True if the order was fully fulled.
         bool cross(Order &aggressingOrder)
         {
-            lastTrades.clear();
+            trades.clear();
 
             while (true)
             {
@@ -287,7 +281,7 @@ namespace OrderBook2
                 aggressingOrder.amount -= matchAmount;
                 passive->amount -= matchAmount;
                 // We only publish trades for the passive orders
-                lastTrades.emplace_back(passive->id, nextExecID++, passive->side, passive->price, matchAmount);
+                trades.emplace_back(passive->id, nextExecID++, passive->side, passive->price, matchAmount);
                 if (passive->amount == 0)
                 {
                     cancel(passive->id);
@@ -312,6 +306,6 @@ namespace OrderBook2
         // List of orders - this manages order lifetimes
         Orders orders;
         // List of trades
-        Trades lastTrades;
+        Trades trades;
     };
 };
