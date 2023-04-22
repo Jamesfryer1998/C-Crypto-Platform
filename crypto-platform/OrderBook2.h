@@ -89,8 +89,6 @@ using BBO = std::pair<OptionalPrice, OptionalPrice>;
 class OrderBook
 {
 public:
-    static constexpr OrderID FULLY_FILLED_ORDER_ID{ 0 };
-
     // find order, if it doesn't exist returns end()
     auto find(OrderID id) const { return orders.find(id); }
 
@@ -141,7 +139,7 @@ public:
             orders.erase(orders.find(id));
             // Release nextID we allocated
             nextID--;
-            return { id, true, trades };
+            return { aggressingOrder.id, true, trades };
         } else // Remaing qty on the order so add to a price level
         {
             assert(aggressingOrder.amount > 0);
