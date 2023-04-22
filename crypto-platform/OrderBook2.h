@@ -7,6 +7,11 @@
 #include <string>
 #include <vector>
 #include <chrono>
+// I want ranges but join_view is marked as experimental due to pending C++23 ABI break,
+// I can't turn on experimental everywhere because <chrono> does not compile.
+#define _LIBCPP_ENABLE_EXPERIMENTAL
+#include <ranges>
+#undef _LIBCPP_ENABLE_EXPERIMENTAL
 #include <list>
 #include <map>
 
@@ -187,32 +192,22 @@ namespace OrderBook2
             return result;
         }
 
-        // Debug dump of bids, asks and the order map
-        void dump() const
+        void clear()
         {
-            std::cout << "BIDS" << std::endl;
-            for (const auto &levelPair : bids)
-            {
-                for (const auto &order : levelPair.second)
-                {
-                    std::cout << *order << std::endl;
-                }
-            }
-            std::cout << "ASKS" << std::endl;
-            for (const auto &levelPair : asks)
-            {
-                for (const auto &order : levelPair.second)
-                {
-                    std::cout << *order << std::endl;
-                }
-            }
-            std::cout << "ORDERS" << std::endl;
-            for (const auto &pair : orders)
-            {
-                std::cout << pair.first << " " << pair.second << std::endl;
-            }
+            bids.clear();
+            asks.clear();
+            orders.clear();
         }
 
+        auto getBids() const
+        {
+            return bids | std::views::values | std::views::join;
+        }
+
+        auto getAsks() const
+        {
+            return asks | std::views::values | std::views::join;
+        }
     private:
         using OrderQueue = std::list<Order *>;
         // We want to be able to:

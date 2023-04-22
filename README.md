@@ -13,9 +13,19 @@ git clone https://github.com/Jamesfryer1998/C-Crypto-Platform.git
 
 ## Building
 To build the platform install conda and create and activate the environment defined in env.yaml. 
+```
+conda env update -f env.yaml
+conda activate base
+conda activate crypto-platform
+
+# check clang is in your path
+which clang
+# should generate
+.../envs/crypto-platform/bin/clang
+```
 Navigate to the root directory of the source code and prepare the build directory:
 ```
-cmake -B build # Creates the makefile, re-run from root when CMakeFiles.txt change.
+CC=clang CXX=clang++ cmake -B build # Creates the makefile, re-run from root when CMakeFiles.txt change.
 ```
 
 Once done, build the platform:
