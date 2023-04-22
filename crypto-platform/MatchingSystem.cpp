@@ -2,6 +2,9 @@
 #include <vector>
 #include <fstream>
 #include <map>
+#include <algorithm>
+
+
 
 #include <crypto-platform/MatchingSystem.h>
 #include <crypto-platform/OrderBookEntry.h>
@@ -33,7 +36,9 @@ void MatchSystem::init()
     std::vector<OrderBookEntry> orders;
     OrderBookEntry entry1("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,1,1);
     orders.push_back(entry1);
-    MatchSystem::matchEngine(orders[0]);
+    // MatchSystem::matchEngine(orders[0]);
+    MatchSystem::priceTime(orders[0]);
+
 }
 
 OrderBookEntry MatchSystem::csvStringToOBE(std::vector<std::string> tokens)
@@ -127,10 +132,10 @@ int MatchSystem::readCSV_NEW(std::string fileName)
         allOrders[key]["orderType"]["ask"].end(),
         OrderBookEntry::comapareByPriceAsc);
 
-        // Sort asks
+        // Sort bids
         std::sort(allOrders[key]["orderType"]["bid"].begin(),
         allOrders[key]["orderType"]["bid"].end(),
-        OrderBookEntry::comapareByPriceAsc);
+        OrderBookEntry::comapareByPriceDesc);
     }
     std::cout << "MatchSystem::readCSV read" << loadCount << "files" << std::endl;
 
@@ -146,7 +151,6 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
     OrderBookType type = order.type;
     std::string product = order.product;
     std::string timestamp = order.timestamp;
-    std::cout << timestamp << std::endl;
 
     std::vector<std::pair<OrderBookEntry, OrderBookEntry>> matched_orders;
 
@@ -237,4 +241,40 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::testMatch(bo
 
     std::vector<std::pair<OrderBookEntry, OrderBookEntry>> matches = MatchSystem::matchEngine(orders[0]);
     return matches;
+}
+
+
+
+/////////////// TEST ///////////////////
+
+std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::priceTime(OrderBookEntry order)
+{
+    double price = order.price;
+    double amount = order.amount;
+    OrderBookType type = order.type;
+    std::string product = order.product;
+    std::string timestamp = order.timestamp;
+
+    std::vector<std::pair<OrderBookEntry, OrderBookEntry>> matched_orders;
+
+    // If order is a bid, check the asks
+    if (type == OrderBookType::bid)
+    {
+        if (allOrders[product]["orderType"]["ask"].size() > 0)
+        {
+            std::vector<OrderBookEntry>& askOrders = allOrders[product]["orderType"]["ask"];
+
+            std::sort(askOrders.begin(),askOrders.end(), OrderBookEntry::comparePriceTimestamp);
+            std::cout << askOrders[0].timestamp << std::endl;
+            std::cout << askOrders.back().timestamp << std::endl;
+
+                // Find the minimum price using std::min_element and a lambda function
+            auto minPriceEntry = std::min_element(askOrders.begin(), askOrders.end(), [](const OrderBookEntry& a, const OrderBookEntry& b) {
+                return a.timestamp < b.timestamp;
+            });
+
+            std::cout << "Minimum price: " << minPriceEntry->timestamp << std::endl;
+        }
+    }       
+    return matched_orders;
 }

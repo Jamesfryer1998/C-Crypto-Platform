@@ -32,6 +32,23 @@ class OrderBookEntry
         {
             return order1.price > order2.price;
         }
+
+        static bool comparePriceTimestamp(const OrderBookEntry& order1, const OrderBookEntry& order2) 
+        {
+            if (order1.price == order2.price)
+            {
+                if (order1.timestamp == order2.timestamp) 
+                {
+                    return order1.amount > order2.amount;
+                } else {
+
+                    return order1.timestamp < order2.timestamp;
+                }
+            } else 
+            {
+                return order1.price < order2.price;
+            }
+        }
         
         std::string timestamp;
         std::string product;

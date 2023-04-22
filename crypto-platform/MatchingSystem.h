@@ -14,6 +14,10 @@ class MatchSystem{
         std::vector<std::pair<OrderBookEntry, OrderBookEntry>> matchEngine(OrderBookEntry bid_order);
         std::vector<std::pair<OrderBookEntry, OrderBookEntry>> testMatch(bool size);
 
+        // test
+        std::vector<std::pair<OrderBookEntry, OrderBookEntry>> priceTime(OrderBookEntry order);
+
+
     private:
         std::map<std::string, std::map<std::string,
         std::map<std::string, std::vector<OrderBookEntry>>>> allOrders;
