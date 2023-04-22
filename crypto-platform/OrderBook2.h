@@ -124,7 +124,7 @@ public:
     using Trades = std::vector<Trade>;
 
     // Insert a new order, may cross the book and generate trades.
-    // Returns The orderID and whether it's a fully filled order.
+    // Returns The orderID, whether it's a fully filled order and a list of trades.
     // Note:(1) price-time priority is not impacted by the timestamp, any order inserted
     //          after another one has lower time priority. The timestamp is simply a record.
     //     :(2) Orders that are fully filled are implicitly cancelled and removed from the book.
