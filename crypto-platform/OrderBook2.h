@@ -135,7 +135,7 @@ public:
         auto [it, _]{ orders.try_emplace(/* key */ id, /* order */ id, side, price, amount, client, timestamp) };
         auto& aggressingOrder{ it->second };
 
-        auto [fullyFilled, trades] {cross(aggressingOrder)};
+        auto [fullyFilled, trades]{ cross(aggressingOrder) };
         if (fullyFilled) {
             // Fully filled so erase from order map
             orders.erase(orders.find(id));
@@ -236,14 +236,14 @@ private:
         Trades trades;
 
         while (true) {
-            auto&[insidePassivePrice, passiveOrders] = *(aggressingOrder.side == Side::bid ? asks.begin() : bids.begin());
+            auto& [insidePassivePrice, passiveOrders] = *(aggressingOrder.side == Side::bid ? asks.begin() : bids.begin());
 
             // If no orders on side break
             if (!passiveOrders.size())
                 break;
 
             // If it won't cross then we are done
-            if ((aggressingOrder.side == Side::bid && insidePassivePrice > aggressingOrder.price) || 
+            if ((aggressingOrder.side == Side::bid && insidePassivePrice > aggressingOrder.price) ||
                 (aggressingOrder.side == Side::ask && insidePassivePrice < aggressingOrder.price))
                 break;
 
@@ -253,15 +253,14 @@ private:
             passive->amount -= matchAmount;
             // We only publish trades for the passive orders
             trades.emplace_back(passive->id, nextExecID++, passive->side, passive->price, matchAmount);
-            if (passive->amount == 0) {
+            if (passive->amount == 0)
                 cancel(passive->id);
-            }
-            if (aggressingOrder.amount == 0) {
-                return std::pair{true, trades};
-            }
+
+            if (aggressingOrder.amount == 0)
+                return std::pair{ true, trades };
         }
 
-        return std::pair{false, trades};
+        return std::pair{ false, trades };
     }
 
     // The next order-id we will assign to a new order
