@@ -59,6 +59,7 @@ TEST_F(OrderBook2Test, TestBBO)
 
     // Given
     // BIDS
+    // 1@2.0
     // 1@3.0
     // ASKS
     // 1@4.0
@@ -66,8 +67,58 @@ TEST_F(OrderBook2Test, TestBBO)
     // ----
     // When we get BBO the BBO is {3.0, 4.0}
     orderBook.insert(OrderBook2::Side::ask, OrderBook2::Price{5}, OrderBook2::Qty{1}, OrderBook2::Timestamp{0}, "test");
+    orderBook.insert(OrderBook2::Side::bid, OrderBook2::Price{2}, OrderBook2::Qty{1}, OrderBook2::Timestamp{0}, "test");
     EXPECT_EQ(orderBook.getBBO(), std::make_pair(OrderBook2::OptionalPrice{3}, OrderBook2::OptionalPrice{4}));
+}
 
+TEST_F(OrderBook2Test, TestBBOEmptyBook)
+{
+    // Given an empty order book
+    // When we get the BBO
+    // Then we expect it to be empty
+    EXPECT_EQ(orderBook.getBBO(), OrderBook2::BBO(std::nullopt, std::nullopt));
+}
+
+TEST_F(OrderBook2Test, TestBBOBidOneSided)
+{
+    // Given
+    // BIDS
+    // 1@3.0
+    // ASKS
+    // ----
+    orderBook.insert(OrderBook2::Side::bid, OrderBook2::Price{3}, OrderBook2::Qty{1}, OrderBook2::Timestamp{0}, "test");
+    // When we get BBO the BBO is {3.0, <empty>}
+    EXPECT_EQ(orderBook.getBBO(), OrderBook2::BBO(3, std::nullopt));
+}
+
+TEST_F(OrderBook2Test, TestBBOAskOneSided)
+{
+    // Given
+    // BIDS
+    // ASKS
+    // 1@4.0
+    // ----
+    orderBook.insert(OrderBook2::Side::ask, OrderBook2::Price{4}, OrderBook2::Qty{1}, OrderBook2::Timestamp{0}, "test");
+    // When we get BBO the BBO is {3.0, <empty>}
+    EXPECT_EQ(orderBook.getBBO(), OrderBook2::BBO(std::nullopt, 4));
+}
+
+TEST_F(OrderBook2Test, TestBBOTwoSidedSingleLevels)
+{
+    // Given
+    // BIDS
+    // 3@4.0
+    // ASKS
+    // 1@4.0
+    // ----
+    // When we get BBO the BBO is {3.0, 4.0}
+    orderBook.insert(OrderBook2::Side::bid, OrderBook2::Price{3}, OrderBook2::Qty{1}, OrderBook2::Timestamp{0}, "test");
+    orderBook.insert(OrderBook2::Side::ask, OrderBook2::Price{4}, OrderBook2::Qty{1}, OrderBook2::Timestamp{0}, "test");
+    EXPECT_EQ(orderBook.getBBO(), std::make_pair(OrderBook2::OptionalPrice{3}, OrderBook2::OptionalPrice{4}));
+}
+
+TEST_F(OrderBook2Test, TestBBOTwoSidedMultipleLevels)
+{
     // Given
     // BIDS
     // 1@2.0
@@ -76,8 +127,11 @@ TEST_F(OrderBook2Test, TestBBO)
     // 1@4.0
     // 1@5.0
     // ----
-    // When we get BBO the BBO is {3.0, 4.0}
+    orderBook.insert(OrderBook2::Side::bid, OrderBook2::Price{3}, OrderBook2::Qty{1}, OrderBook2::Timestamp{0}, "test");
+    orderBook.insert(OrderBook2::Side::ask, OrderBook2::Price{4}, OrderBook2::Qty{1}, OrderBook2::Timestamp{0}, "test");
+    orderBook.insert(OrderBook2::Side::ask, OrderBook2::Price{5}, OrderBook2::Qty{1}, OrderBook2::Timestamp{0}, "test");
     orderBook.insert(OrderBook2::Side::bid, OrderBook2::Price{2}, OrderBook2::Qty{1}, OrderBook2::Timestamp{0}, "test");
+    // When we get BBO the BBO is {3.0, 4.0}
     EXPECT_EQ(orderBook.getBBO(), std::make_pair(OrderBook2::OptionalPrice{3}, OrderBook2::OptionalPrice{4}));
 }
 
