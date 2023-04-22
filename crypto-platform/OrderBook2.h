@@ -1,3 +1,4 @@
+#pragma once
 #include <unordered_map>
 #include <algorithm>
 #include <iostream>
@@ -24,12 +25,12 @@ namespace OrderBook2
         ask
     };
 
-    std::ostream &operator<<(std::ostream &o, Side side)
+    inline std::ostream &operator<<(std::ostream &o, Side side)
     {
         return o << ((side == Side::bid) ? "B" : "A");
     }
 
-    constexpr Side oppositeSide(Side side)
+    inline constexpr Side oppositeSide(Side side)
     {
         return side == Side::bid ? Side::ask : Side::bid;
     }
