@@ -298,7 +298,7 @@ namespace OrderBook2
         // The next order-id we will assign to a new order
         OrderID nextID{1};
         // The next trade-id we will assign to a trade
-        [[maybe_unused]] ExecID nextExecID{1};
+        ExecID nextExecID{1};
         // List of bid price levels in price level order
         Bids bids;
         // List of ask price levels in price level order
