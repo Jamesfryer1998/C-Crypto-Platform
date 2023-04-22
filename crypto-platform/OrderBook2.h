@@ -133,9 +133,10 @@ public:
         OrderID id{ nextID++ };
         assert(!orders.contains(id));
         auto [it, _]{ orders.try_emplace(/* key */ id, /* order */ id, side, price, amount, client, timestamp) };
-        trades.clear();
         auto& aggressingOrder{ it->second };
-        if (cross(aggressingOrder)) {
+
+        auto [fullyFilled, trades] {cross(aggressingOrder)};
+        if (fullyFilled) {
             // Fully filled so erase from order map
             orders.erase(orders.find(id));
             // Release nextID we allocated
@@ -174,6 +175,7 @@ public:
         return result;
     }
 
+    // Clear out all orders
     void clear()
     {
         bids.clear();
@@ -181,8 +183,9 @@ public:
         orders.clear();
     }
 
+    // Get a view on the bids in price/time order
     auto getBids() const { return bids | std::views::values | std::views::join; }
-
+    // Get a view on the asks in price/time order
     auto getAsks() const { return asks | std::views::values | std::views::join; }
 
 private:
@@ -228,22 +231,20 @@ private:
 
     // Tries to cross the book and generate trades.
     // Returns True if the order was fully fulled.
-    bool cross(Order& aggressingOrder)
+    std::pair<bool, Trades> cross(Order& aggressingOrder)
     {
-        trades.clear();
+        Trades trades;
 
         while (true) {
-            Side passiveSide{ oppositeSide(aggressingOrder.side) };
-            OrderQueue& passiveOrders{ passiveSide == Side::ask ? asks.begin()->second : bids.begin()->second };
+            auto&[insidePassivePrice, passiveOrders] = *(aggressingOrder.side == Side::bid ? asks.begin() : bids.begin());
+
             // If no orders on side break
             if (!passiveOrders.size())
                 break;
-            Price insidePassivePrice{ passiveSide == Side::ask ? asks.begin()->first : bids.begin()->first };
 
             // If it won't cross then we are done
-            if (aggressingOrder.side == Side::bid && insidePassivePrice > aggressingOrder.price)
-                break;
-            if (aggressingOrder.side == Side::ask && insidePassivePrice < aggressingOrder.price)
+            if ((aggressingOrder.side == Side::bid && insidePassivePrice > aggressingOrder.price) || 
+                (aggressingOrder.side == Side::ask && insidePassivePrice < aggressingOrder.price))
                 break;
 
             Order* passive{ *passiveOrders.begin() };
@@ -256,11 +257,11 @@ private:
                 cancel(passive->id);
             }
             if (aggressingOrder.amount == 0) {
-                return true;
+                return std::pair{true, trades};
             }
         }
 
-        return false;
+        return std::pair{false, trades};
     }
 
     // The next order-id we will assign to a new order
@@ -273,7 +274,5 @@ private:
     Asks asks;
     // List of orders - this manages order lifetimes
     Orders orders;
-    // List of trades
-    Trades trades;
 };
 };
