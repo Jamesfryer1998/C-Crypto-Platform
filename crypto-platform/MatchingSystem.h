@@ -17,10 +17,15 @@ class MatchSystem{
         // test
         std::vector<std::pair<OrderBookEntry, OrderBookEntry>> priceTime(OrderBookEntry order);
 
+        auto getOrderBook()
+        {
+            return allOrders;
+        }
 
     private:
         std::map<std::string, std::map<std::string,
         std::map<std::string, std::vector<OrderBookEntry>>>> allOrders;
+
 };
 
 class Trades{
@@ -37,6 +42,4 @@ class Trades{
         OrderBookType sellCurrency;
         double buyPrice;
         double sellPrice;
-                
-
 };

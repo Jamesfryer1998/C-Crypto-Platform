@@ -166,12 +166,8 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
                 OrderBookEntry& singleAsk = askOrders[i];
                 if (singleAsk.price <= price)
                 {
-                    double matchAmount = std::min(amount, singleAsk.amount);
-                    OrderBookEntry OBE1(timestamp, product, type, amount, price);
-                    OrderBookEntry OBE2(singleAsk.timestamp, singleAsk.product,
-                                        singleAsk.type, singleAsk.amount, singleAsk.price);
-                    
-                    matched_orders.push_back(std::make_pair(OBE1, OBE2));
+                    double matchAmount = std::min(amount, singleAsk.amount);                    
+                    matched_orders.push_back(std::make_pair(order, singleAsk));                    
                     amount -= matchAmount;
                     singleAsk.amount -= matchAmount;
                     if (singleAsk.amount == 0)
@@ -197,12 +193,8 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
                 OrderBookEntry& singleBid = bidOrders[i];
                 if (singleBid.price >= price)
                 {
-                    double matchAmount = std::min(amount, singleBid.amount);
-                    OrderBookEntry OBE1(timestamp, product, type, amount, price);
-                    OrderBookEntry OBE2(singleBid.timestamp, singleBid.product,
-                                        singleBid.type, singleBid.amount, singleBid.price);
-                    
-                    matched_orders.push_back(std::make_pair(OBE2, OBE1));
+                    double matchAmount = std::min(amount, singleBid.amount);                    
+                    matched_orders.push_back(std::make_pair(order, singleBid));
                     amount -= matchAmount;
                     singleBid.amount -= matchAmount;
                     if (singleBid.amount == 0)
@@ -223,34 +215,15 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
     return matched_orders;
 }
 
-std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::testMatch(bool size)
-{
-    MatchSystem::readCSV_NEW("20200317.csv");
-    std::vector<OrderBookEntry> orders;
-    // Large order, guaranteed match
-    if (size == true) 
-    {
-        OrderBookEntry entry("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,1,1);
-        orders.push_back(entry);
-    }
-    if (size == false)
-    {
-        OrderBookEntry entry("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,0,0);
-        orders.push_back(entry);
-    }
-
-    std::vector<std::pair<OrderBookEntry, OrderBookEntry>> matches = MatchSystem::matchEngine(orders[0]);
-    return matches;
-}
-
-
+// TODO:
+// 1. Add insert and remove order functions 
 
 /////////////// TEST ///////////////////
 
 std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::priceTime(OrderBookEntry order)
 {
-    double price = order.price;
-    double amount = order.amount;
+    // double price = order.price;
+    // double amount = order.amount;
     OrderBookType type = order.type;
     std::string product = order.product;
     std::string timestamp = order.timestamp;
@@ -268,7 +241,7 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::priceTime(Or
             std::cout << askOrders[0].timestamp << std::endl;
             std::cout << askOrders.back().timestamp << std::endl;
 
-                // Find the minimum price using std::min_element and a lambda function
+            // Find the minimum price using std::min_element and a lambda function
             auto minPriceEntry = std::min_element(askOrders.begin(), askOrders.end(), [](const OrderBookEntry& a, const OrderBookEntry& b) {
                 return a.timestamp < b.timestamp;
             });
