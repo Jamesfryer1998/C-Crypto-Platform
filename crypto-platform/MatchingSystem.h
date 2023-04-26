@@ -13,18 +13,19 @@ class MatchSystem{
         int readCSV_NEW(std::string fileName);
         std::vector<std::pair<OrderBookEntry, OrderBookEntry>> matchEngine(OrderBookEntry bid_order);
         std::vector<std::pair<OrderBookEntry, OrderBookEntry>> testMatch(bool size);
+        void clearOrderBook();
+        void inserOrder(std::string product, std::string type, OrderBookEntry order);
+        void removeOrder(std::string product, std::string type);
 
-        // test
-        std::vector<std::pair<OrderBookEntry, OrderBookEntry>> priceTime(OrderBookEntry order);
-
+        // This can go after insert and remove functions added
         auto getOrderBook()
         {
-            return allOrders;
+            return orderBook;
         }
 
     private:
         std::map<std::string, std::map<std::string,
-        std::map<std::string, std::vector<OrderBookEntry>>>> allOrders;
+        std::map<std::string, std::vector<OrderBookEntry>>>> orderBook;
 
 };
 

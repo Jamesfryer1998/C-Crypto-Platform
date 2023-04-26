@@ -2,12 +2,10 @@
 #include <crypto-platform/MatchingSystem.h>
 
 MatchSystem match;
-int count = match.readCSV_NEW("/Users/james/Projects/C++ Crypto Trading/testing_suite/crypto_platform/20200317.csv");
-
 // Ive defined this function outisde the test, is this okay??
 std::vector<std::pair<OrderBookEntry, OrderBookEntry>> testMatch(bool size)
 {
-    match.readCSV_NEW("20200317.csv");
+    match.readCSV_NEW("/Users/james/Projects/C++ Crypto Trading/testing_suite/crypto_platform/20200317.csv");
     std::vector<OrderBookEntry> orders;
     if (size == true) 
     {
@@ -28,12 +26,72 @@ TEST(MatchSystemTest, FileRead) {
     MatchSystem match;
     {
         // Correct amount of products to load in
+        int count = match.readCSV_NEW("/Users/james/Projects/C++ Crypto Trading/testing_suite/crypto_platform/20200317.csv");
         // We expcect count to be 3450
         EXPECT_EQ(count, 3540);
     }
 }
 
-TEST(MatchSystemTest, MatchOrders) {
+TEST(MatchSystemTest, orderBookClear) {
+    MatchSystem match;
+
+    {
+        // Load CSV into orderBook
+        auto count = match.readCSV_NEW("/Users/james/Projects/C++ Crypto Trading/testing_suite/crypto_platform/20200317.csv");
+
+        EXPECT_EQ(count, 3540);
+    }
+
+    {
+        // Clear the orderbook
+        match.clearOrderBook();
+
+        // Orderbook size should be empty (0)
+        EXPECT_EQ(match.getOrderBook().size(), 0);
+    }
+}
+
+TEST(MatchSystemTest, orderBookInsert) {
+    MatchSystem match;
+    {
+        OrderBookEntry askEntry("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,2);
+        // Add ask into OrderBook
+        match.inserOrder("BTC/ETH", "ask", askEntry);
+        EXPECT_EQ(match.getOrderBook()["BTC/ETH"]["orderType"]["ask"].size(), 1);
+    }
+
+    {
+        OrderBookEntry bidEntry("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,1,2);
+        // Add bid into OrderBook
+        match.inserOrder("BTC/ETH", "bid", bidEntry);
+        EXPECT_EQ(match.getOrderBook()["BTC/ETH"]["orderType"]["bid"].size(), 1);
+    }
+}
+
+TEST(MatchSystemTest, orderBookRemove) {
+    MatchSystem match;
+    {
+        OrderBookEntry askEntry("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,2);
+        // Add ask into OrderBook
+        match.inserOrder("BTC/ETH", "ask", askEntry);
+        // Remove ask from OrderBook
+        match.removeOrder("BTC/ETH", "ask");
+        // Ordersize should be 0
+        EXPECT_EQ(match.getOrderBook()["BTC/ETH"]["orderType"]["ask"].size(), 0);
+    }
+
+    {
+        OrderBookEntry bidEntry("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,1,2);
+        // Add bid into OrderBook
+        match.inserOrder("BTC/ETH", "bid", bidEntry);
+        // Remove ask from OrderBook
+        match.removeOrder("BTC/ETH", "bid");
+        EXPECT_EQ(match.getOrderBook()["BTC/ETH"]["orderType"]["bid"].size(), 0);
+    }
+}
+
+TEST(MatchSystemTest, MatchFullOrders) {
+    MatchSystem match;
     {
         // Large order, so there will be a match
         auto matches_1 = testMatch(false);
@@ -51,42 +109,80 @@ TEST(MatchSystemTest, MatchOrders) {
     }
 }
 
-TEST(MatchSystemTest, orderBook) {
+TEST(MatchSystemTest, MatchPartialOrders) {
     MatchSystem match;
-    auto orderBook = match.getOrderBook();
 
+    // BIDS TO ASKS
     {
-        OrderBookEntry askEntry("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,2);
-        // Add ask into OrderBook
-        orderBook["BTC/ETH"]["orderType"]["ask"].push_back(askEntry);
+        // Create asks and bid
+        OrderBookEntry askEntry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,1);
+        OrderBookEntry askEntry2("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,1);
+        OrderBookEntry bidEntry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,1,0.5);
 
-        EXPECT_EQ(orderBook["BTC/ETH"]["orderType"]["ask"].size(), 1);
+        // Insert asks into orderbook
+        match.inserOrder("BTC/ETH", "ask", askEntry1);
+        match.inserOrder("BTC/ETH", "ask", askEntry2);
+
+        // Match the bid to the asks
+        auto matches = match.matchEngine(bidEntry1);
+
+        // Expect to see 1 match from 0.5 BTC
+        EXPECT_EQ(matches.size(), 1);
     }
 
     {
-        OrderBookEntry bidEntry("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,1,2);
+        // Create asks and bid
+        OrderBookEntry askEntry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,1);
+        OrderBookEntry askEntry2("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,1);
+        OrderBookEntry bidEntry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,1,1.5);
 
-        // Add bid into OrderBook
-        orderBook["BTC/ETH"]["orderType"]["bid"].push_back(bidEntry);
+        // Insert asks into orderbook
+        match.inserOrder("BTC/ETH", "ask", askEntry1);
+        match.inserOrder("BTC/ETH", "ask", askEntry2);
 
-        EXPECT_EQ(orderBook["BTC/ETH"]["orderType"]["bid"].size(), 1);
+        // Match the bid to the asks
+        auto matches = match.matchEngine(bidEntry1);
+
+        // Expect to see 2 matches from 1.5 BTC
+        EXPECT_EQ(matches.size(), 2);
     }
 
-        {
-        // Remove ask from OrderBook
-        orderBook["BTC/ETH"]["orderType"]["ask"].erase(orderBook["BTC/ETH"]["orderType"]["ask"].begin());
+    // ASKS TO BIDS
+    {
+        // Create asks and bid
+        OrderBookEntry bidEntry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,1,1);
+        OrderBookEntry bidEntry2("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,1,1);
+        OrderBookEntry askEntry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1.5,1);
 
-        EXPECT_EQ(orderBook["BTC/ETH"]["orderType"]["ask"].size(), 0);
+        // Insert asks into orderbook
+        match.inserOrder("BTC/ETH", "bid", bidEntry1);
+        match.inserOrder("BTC/ETH", "bid", bidEntry2);
+
+        // Match the bid to the asks
+        auto matches = match.matchEngine(askEntry1);
+
+        // Expect to see 1 match for 1.5 BTC for 1 ETH
+        EXPECT_EQ(matches.size(), 0);
     }
 
     {
-        
-        // Add bid into OrderBook
-        orderBook["BTC/ETH"]["orderType"]["bid"].erase(orderBook["BTC/ETH"]["orderType"]["bid"].begin());
+        // Create asks and bid
+        OrderBookEntry bidEntry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,1,1);
+        OrderBookEntry bidEntry2("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,1,1);
+        OrderBookEntry askEntry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,0.5,1);
 
-        EXPECT_EQ(orderBook["BTC/ETH"]["orderType"]["bid"].size(), 0);
+        // Insert asks into orderbook
+        match.inserOrder("BTC/ETH", "bid", bidEntry1);
+        match.inserOrder("BTC/ETH", "bid", bidEntry2);
+
+        // Match the bid to the asks
+        auto matches = match.matchEngine(askEntry1);
+
+        // Expect to see 1 match from 1 BTC at 0.5 ETH
+        EXPECT_EQ(matches.size(), 1);
     }
 }
+
 
 // TODO:
 //  Look at andys TestOrderBook2 test cases to see some of the schenarios to test from

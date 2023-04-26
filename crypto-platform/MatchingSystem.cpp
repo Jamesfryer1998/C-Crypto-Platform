@@ -36,9 +36,7 @@ void MatchSystem::init()
     std::vector<OrderBookEntry> orders;
     OrderBookEntry entry1("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,1,1);
     orders.push_back(entry1);
-    // MatchSystem::matchEngine(orders[0]);
-    MatchSystem::priceTime(orders[0]);
-
+    MatchSystem::matchEngine(orders[0]);
 }
 
 OrderBookEntry MatchSystem::csvStringToOBE(std::vector<std::string> tokens)
@@ -104,13 +102,13 @@ int MatchSystem::readCSV_NEW(std::string fileName)
                 // asks
                 if (tokens[2] == "ask")
                 {
-                    allOrders[tokens[1]]["orderType"]["ask"].push_back(OBE);
+                    orderBook[tokens[1]]["orderType"]["ask"].push_back(OBE);
                     loadCount++;
                 }
                 // bids
                 else
                 {
-                    allOrders[tokens[1]]["orderType"]["bid"].push_back(OBE);
+                    orderBook[tokens[1]]["orderType"]["bid"].push_back(OBE);
                     loadCount++;
                 }
             }catch(const std::exception& e)
@@ -122,25 +120,40 @@ int MatchSystem::readCSV_NEW(std::string fileName)
 
     // Sorting vectors
     std::string key;
-    for (auto& keyValue: allOrders)
+    for (auto& keyValue: orderBook)
     {
         key = keyValue.first;
         std::cout << key << std::endl;
 
         // Sort asks
-        std::sort(allOrders[key]["orderType"]["ask"].begin(),
-        allOrders[key]["orderType"]["ask"].end(),
+        std::sort(orderBook[key]["orderType"]["ask"].begin(),
+        orderBook[key]["orderType"]["ask"].end(),
         OrderBookEntry::comapareByPriceAsc);
 
         // Sort bids
-        std::sort(allOrders[key]["orderType"]["bid"].begin(),
-        allOrders[key]["orderType"]["bid"].end(),
+        std::sort(orderBook[key]["orderType"]["bid"].begin(),
+        orderBook[key]["orderType"]["bid"].end(),
         OrderBookEntry::comapareByPriceDesc);
     }
     std::cout << "MatchSystem::readCSV read" << loadCount << "files" << std::endl;
 
     return loadCount;
 } 
+
+void MatchSystem::clearOrderBook()
+{
+    orderBook.clear();
+}
+
+void MatchSystem::inserOrder(std::string product, std::string type, OrderBookEntry order)
+{
+    orderBook[product]["orderType"][type].push_back(order);
+}
+
+void MatchSystem::removeOrder(std::string product, std::string type)
+{
+    orderBook[product]["orderType"][type].erase(orderBook[product]["orderType"][type].end() - 1);
+}
 
 
 // Function to match a single bid order with an ask order using price-time priority
@@ -157,9 +170,9 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
     // If order is a bid, check the asks
     if (type == OrderBookType::bid)
     {
-        if (allOrders[product]["orderType"]["ask"].size() > 0)
+        if (orderBook[product]["orderType"]["ask"].size() > 0)
         {
-            std::vector<OrderBookEntry>& askOrders = allOrders[product]["orderType"]["ask"];
+            std::vector<OrderBookEntry>& askOrders = orderBook[product]["orderType"]["ask"];
 
             for (unsigned long i = 0; i <  askOrders.size(); i++)
             {
@@ -184,9 +197,9 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
     // If order is a ask, check the bids
     if (type == OrderBookType::ask)
     {
-        if (allOrders[product]["orderType"]["bid"].size() > 0)
+        if (orderBook[product]["orderType"]["bid"].size() > 0)
         {
-            std::vector<OrderBookEntry>& bidOrders = allOrders[product]["orderType"]["bid"];
+            std::vector<OrderBookEntry>& bidOrders = orderBook[product]["orderType"]["bid"];
 
             for (unsigned long i = 0; i < bidOrders.size(); i++)
             {
@@ -195,6 +208,7 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
                 {
                     double matchAmount = std::min(amount, singleBid.amount);                    
                     matched_orders.push_back(std::make_pair(order, singleBid));
+                    // Sort bidOrders
                     amount -= matchAmount;
                     singleBid.amount -= matchAmount;
                     if (singleBid.amount == 0)
@@ -218,36 +232,3 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
 // TODO:
 // 1. Add insert and remove order functions 
 
-/////////////// TEST ///////////////////
-
-std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::priceTime(OrderBookEntry order)
-{
-    // double price = order.price;
-    // double amount = order.amount;
-    OrderBookType type = order.type;
-    std::string product = order.product;
-    std::string timestamp = order.timestamp;
-
-    std::vector<std::pair<OrderBookEntry, OrderBookEntry>> matched_orders;
-
-    // If order is a bid, check the asks
-    if (type == OrderBookType::bid)
-    {
-        if (allOrders[product]["orderType"]["ask"].size() > 0)
-        {
-            std::vector<OrderBookEntry>& askOrders = allOrders[product]["orderType"]["ask"];
-
-            std::sort(askOrders.begin(),askOrders.end(), OrderBookEntry::comparePriceTimestamp);
-            std::cout << askOrders[0].timestamp << std::endl;
-            std::cout << askOrders.back().timestamp << std::endl;
-
-            // Find the minimum price using std::min_element and a lambda function
-            auto minPriceEntry = std::min_element(askOrders.begin(), askOrders.end(), [](const OrderBookEntry& a, const OrderBookEntry& b) {
-                return a.timestamp < b.timestamp;
-            });
-
-            std::cout << "Minimum price: " << minPriceEntry->timestamp << std::endl;
-        }
-    }       
-    return matched_orders;
-}
