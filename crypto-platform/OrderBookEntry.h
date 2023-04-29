@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-// #pragma GCC diagnostic ignored "-Wc++11-extensions"
-// #pragma GCC diagnostic ignored "-Wlocal-type-template-args"
 
 enum class OrderBookType{bid, ask, asksale, bidsale, unknown};
 
@@ -41,7 +39,6 @@ class OrderBookEntry
                 {
                     return order1.amount > order2.amount;
                 } else {
-
                     return order1.timestamp < order2.timestamp;
                 }
             } else 

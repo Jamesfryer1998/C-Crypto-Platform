@@ -183,6 +183,37 @@ TEST(MatchSystemTest, MatchPartialOrders) {
     }
 }
 
+TEST(MatchSystemTest, TradeSystem) {
+    MatchSystem match;
+    {
+        // Loading in the OrderBook
+        match.readCSV_NEW("/Users/james/Projects/C++ Crypto Trading/testing_suite/crypto_platform/20200317.csv");
+
+        // Add User Ask entry
+        OrderBookEntry entry("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,1,1);
+
+        // Match orders within order book
+        auto matches = match.matchEngine(entry); 
+
+        // Get number of trades
+        auto trades = match.getTrades();
+
+        // A single match witho a fulfilled rder should be 1
+        EXPECT_EQ(trades.size(), 1);
+    }
+
+    {
+        auto trades = match.getTrades();
+        double sumBuyPrices = match.totalBuy(trades);
+        double sumSellPrices = match.totalSell(trades);
+
+        EXPECT_EQ(sumBuyPrices, 1);
+        EXPECT_EQ(sumSellPrices, 1);
+
+    }
+
+}
+
 
 // TODO:
 //  Look at andys TestOrderBook2 test cases to see some of the schenarios to test from

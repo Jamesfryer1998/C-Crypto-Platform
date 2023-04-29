@@ -4,28 +4,12 @@
 #include <map>
 #include <algorithm>
 
-
-
 #include <crypto-platform/MatchingSystem.h>
 #include <crypto-platform/OrderBookEntry.h>
 #include <crypto-platform/CSVReader.h>
+#include <crypto-platform/TradeBookEntry.h>
 
 MatchSystem::MatchSystem()
-{
-    
-}
-
-Trades::Trades( std::string _timestamp,
-                std::string _buyCurrency,
-                OrderBookType _sellCurrency,
-                double _buyPrice,
-                double _sellPrice)
-                
-: timestamp(_timestamp),
-  buyCurrency(_buyCurrency),
-  sellCurrency(_sellCurrency),
-  buyPrice(_buyPrice),
-  sellPrice(_sellPrice)
 {
     
 }
@@ -33,6 +17,8 @@ Trades::Trades( std::string _timestamp,
 void MatchSystem::init()
 {
     MatchSystem::readCSV_NEW("20200317.csv");
+
+    // Test order (This can be removed)
     std::vector<OrderBookEntry> orders;
     OrderBookEntry entry1("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,1,1);
     orders.push_back(entry1);
@@ -155,6 +141,30 @@ void MatchSystem::removeOrder(std::string product, std::string type)
     orderBook[product]["orderType"][type].erase(orderBook[product]["orderType"][type].end() - 1);
 }
 
+void MatchSystem::addTrade(std::string timestamp,
+                            std::string buyCurrency,
+                            std::string sellCurrency,
+                            double buyPrice,
+                            double sellPrice)
+{
+    TradeBookEntry trade(timestamp, buyCurrency, sellCurrency, buyPrice, sellPrice);
+    trades.push_back(trade);
+}
+
+double MatchSystem::totalBuy(std::vector<TradeBookEntry> trades)
+{
+    double sum_of_prices = std::accumulate(trades.begin(), trades.end(), 0.0,
+    [](double prices, const TradeBookEntry& trade) { return prices + trade.buyPrice; });
+    return sum_of_prices;
+}
+
+double MatchSystem::totalSell(std::vector<TradeBookEntry> trades) 
+{
+    double sum_of_prices = std::accumulate(trades.begin(), trades.end(), 0.0,
+    [](double prices, const TradeBookEntry& trade) { return prices + trade.sellPrice; });
+    return sum_of_prices;
+}
+
 
 // Function to match a single bid order with an ask order using price-time priority
 std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(OrderBookEntry order)
@@ -183,12 +193,19 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
                     matched_orders.push_back(std::make_pair(order, singleAsk));                    
                     amount -= matchAmount;
                     singleAsk.amount -= matchAmount;
+
+                    // Adding a trade
+                    std::vector<std::string> currencies = CSVReader::tokenise(product, '/');
+                    std::cout << timestamp << currencies[0] << currencies[1] << price << matchAmount << std::endl;
+                    MatchSystem::addTrade(timestamp, currencies[0], currencies[1], price, matchAmount);
                     if (singleAsk.amount == 0)
                     {
                         askOrders.erase(askOrders.begin() + i);
                         i--;
                     }
                     if (amount <= 0) break;
+
+
                 }
             }
         }
@@ -211,17 +228,24 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
                     // Sort bidOrders
                     amount -= matchAmount;
                     singleBid.amount -= matchAmount;
+
+                    // Adding a tade
+                    std::vector<std::string> currencies = CSVReader::tokenise(product, '/');
+                    std::cout << timestamp << currencies[0] << currencies[1] << price << matchAmount << std::endl;
+                    MatchSystem::addTrade(timestamp, currencies[0], currencies[1], price, matchAmount);
+                    
                     if (singleBid.amount == 0)
                     {
                         bidOrders.erase(bidOrders.begin() + i);
                         i--;
                     }
                     if (amount <= 0) break;
+
                 }
             }
         }
     }
-    std::cout << "Matched orders number: " << matched_orders.size() << std::endl; 
+    // std::cout << "Matched orders number: " << matched_orders.size() << std::endl; 
 
     // TODO: - Add the fullfilled ordered to a trades vector
     // Find a better way to match, we are still looping through the vectors
