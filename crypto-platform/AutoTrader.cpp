@@ -200,6 +200,9 @@ void AutoTrader::ROI()
 
 
 
+
+
+
 void AutoTrader::autoAsk(std::string product, std::string timestamp)
 {
 

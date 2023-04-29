@@ -159,8 +159,9 @@ double MatchSystem::totalSell(std::vector<TradeBookEntry> trades)
     return sum_of_prices;
 }
 
+// TODO:
+// - More Trade book stats, maybe for each product
 
-// Function to match a single bid order with an ask order using price-time priority
 std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(OrderBookEntry order)
 {
     double price = order.price;
@@ -246,7 +247,4 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
 
     return matched_orders;
 }
-
-// TODO:
-// 1. Add insert and remove order functions 
 
