@@ -14,8 +14,10 @@ AutoTrader::AutoTrader(OrderBook _orderbook)
 
 void AutoTrader::callAutoTrader(Wallet walletInput)
 {
-    wallet = walletInput;
     system("clear");
+    std::cout << "===== USING MATCHING SYSTEM =====\n" << std::endl;
+    match.init();
+    wallet = walletInput;
     while (true)
     {
         AutoTrader::autoTradeMenu();
@@ -28,14 +30,14 @@ void AutoTrader::callAutoTrader(Wallet walletInput)
 
 void AutoTrader::autoTradeMenu()
 {
-    std::cout << "Welcome to the Automatic Trading system." << std::endl;
+    std::cout << "\nWelcome to the Automatic Trading system." << std::endl;
     std::cout << "Please select an option below:\n" << std::endl;
     std::cout << "1: Select currencies and amount:" << std::endl;
     std::cout << "2: Stop Loss %" << std::endl;
     std::cout << "3: Expected Returns (ROI) %" << std::endl;
     std::cout << "4: Start Auto Trader" << std::endl;
     std::cout << "5: Stop Auto Trader" << std::endl;
-    std::cout << "6: <--Return " << std::endl;
+    std::cout << "6: <--Return (legacy system)" << std::endl;
 }
 
 int AutoTrader::getUserOption(bool verbose)
@@ -47,7 +49,7 @@ int AutoTrader::getUserOption(bool verbose)
         userOption = std::stoi(line);
     }catch(const std::exception& e)
     {
-        // 
+        // Do nothing
     }
     
     if (verbose == true)
@@ -65,7 +67,7 @@ void AutoTrader::processUserOption(int userOption)
     }
     if (userOption == 1)
     {
-        AutoTrader::currencySelectionNew();
+        AutoTrader::currencySelection();
     }
     if (userOption == 2)
     {
@@ -98,7 +100,7 @@ void AutoTrader::invalidChoice()
  * 2. Check if this currency is in wallet (tokenise their answer, and use tokens[0])
  * 3. If TRUE when add the currency to the list
  * 4. If false then call invalidChoice() and ask to try again */ 
-void AutoTrader::currencySelectionNew()
+void AutoTrader::currencySelection()
 {
     std::cout << "Please enter a currency you wish to trade with: (USDT,1000) '/'  to exit" << std::endl;
 
@@ -158,6 +160,45 @@ void AutoTrader::ROI()
         std::cout << product << " : " << finalAmount << std::endl;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void AutoTrader::autoAsk(std::string product, std::string timestamp)
 {
@@ -262,7 +303,8 @@ void AutoTrader::autoStart()
      * Once stop loss reached, exit
      * Once ROI reaches, exit
      * Return the wallet amount at the end along with number of trades made
-     * (May need a separte cpp for stratergies etc)*/ 
+     * (May need a separte cpp for stratergies etc) */ 
+
     AutoTrader::autoAsk("BTC/ETH","2020/03/17 17:01:24.88449"); // FIXME: This is causing segementaiton error
     std::cout << "Start activate" << std::endl;
     isAutoTraderRunning = true;

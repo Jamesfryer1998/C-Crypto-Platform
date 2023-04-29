@@ -209,7 +209,6 @@ TEST(MatchSystemTest, TradeSystem) {
 
         EXPECT_EQ(sumBuyPrices, 1);
         EXPECT_EQ(sumSellPrices, 1);
-
     }
 
 }

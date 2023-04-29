@@ -17,12 +17,6 @@ MatchSystem::MatchSystem()
 void MatchSystem::init()
 {
     MatchSystem::readCSV_NEW("20200317.csv");
-
-    // Test order (This can be removed)
-    std::vector<OrderBookEntry> orders;
-    OrderBookEntry entry1("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,1,1);
-    orders.push_back(entry1);
-    MatchSystem::matchEngine(orders[0]);
 }
 
 OrderBookEntry MatchSystem::csvStringToOBE(std::vector<std::string> tokens)
@@ -109,7 +103,7 @@ int MatchSystem::readCSV_NEW(std::string fileName)
     for (auto& keyValue: orderBook)
     {
         key = keyValue.first;
-        std::cout << key << std::endl;
+        // std::cout << key << " loaded." << std::endl;
 
         // Sort asks
         std::sort(orderBook[key]["orderType"]["ask"].begin(),
@@ -121,7 +115,7 @@ int MatchSystem::readCSV_NEW(std::string fileName)
         orderBook[key]["orderType"]["bid"].end(),
         OrderBookEntry::comapareByPriceDesc);
     }
-    std::cout << "MatchSystem::readCSV read" << loadCount << "files" << std::endl;
+    std::cout << loadCount << " orders loaded." << std::endl;
 
     return loadCount;
 } 
