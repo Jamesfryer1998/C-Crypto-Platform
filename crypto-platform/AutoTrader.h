@@ -10,17 +10,20 @@
 class AutoTrader{
 
     public:
-        AutoTrader(OrderBook _orderbook);
-        OrderBook orderBook;
+        AutoTrader();
         void autoTradeMenu();
         void processUserOption(int userOption);
         void callAutoTrader(Wallet walletInput);
 
+        auto getCurrMap()
+        {
+            return currMap;
+        }
 
     private:
         Wallet wallet;
         MatchSystem match;
-
+        
         // Maps
         std::map<std::string, double> currMap;
         std::map<std::string, double> tradeCurrMap; // Probs need to change these variables,
@@ -30,8 +33,8 @@ class AutoTrader{
         // Variables
         int roi;
         int stopLossOption;
-        int tradeCount = 0;// Hard coded for now, allow a user input
-        int numberTrades = 1000; // Used to define the amount the trade
+        // int tradeCount = 0;// Hard coded for now, allow a user input
+        // int numberTrades = 1000; // Used to define the amount the trade
         bool isAutoTraderRunning = false;
 
         // User input
@@ -44,10 +47,5 @@ class AutoTrader{
         void currencySelection();
         int getUserOption(bool verbose=true);
 
-
-
-
-        // Maybe not needed
-        void autoAsk(std::string product, std::string timestamp);
-        void autoBid(std::string product, std::string timestamp);
+        void generateTrades();
 };

@@ -33,5 +33,5 @@ class MerkelMain
         std::string currentTime;
         OrderBook orderBook{"20200317.csv"};
         Wallet wallet;
-        AutoTrader autoTrade{orderBook};
+        AutoTrader autoTrade;
 };

@@ -6,8 +6,7 @@
 #include <vector>
 #include <map>
 
-AutoTrader::AutoTrader(OrderBook _orderbook)
-: orderBook(_orderbook)
+AutoTrader::AutoTrader()
 {
 
 }
@@ -15,7 +14,7 @@ AutoTrader::AutoTrader(OrderBook _orderbook)
 void AutoTrader::callAutoTrader(Wallet walletInput)
 {
     system("clear");
-    std::cout << "===== USING MATCHING SYSTEM =====\n" << std::endl;
+    std::cout << "===== USING NEW MATCHING SYSTEM =====\n" << std::endl;
     match.init();
     wallet = walletInput;
     while (true)
@@ -79,7 +78,7 @@ void AutoTrader::processUserOption(int userOption)
     }
     if (userOption == 4)
     {
-        AutoTrader::autoStart();
+        AutoTrader::generateTrades();
     }
     if (userOption == 5)
     {
@@ -162,143 +161,27 @@ void AutoTrader::ROI()
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void AutoTrader::autoAsk(std::string product, std::string timestamp)
+void AutoTrader::generateTrades()
 {
-
-    // FIXME: Segmentation error?? Not sure why.
-
-    /** Makes automatic asks in orderbook
-     * 1. Gets all asks from order book
-     * 2. Finds the cheapest asks for each product at current time point
-     * 3. Creates orderbookentry and inserts order into orderbook
-     *      - If ROI not reached
-     *      - If stop loss not reached */ 
-
-    std::vector<OrderBookEntry> askEntries = orderBook.getOrdersOfCurrency(OrderBookType::ask,
-                                                                product, timestamp);
-
-    double amountToTrade = currMap[product] / numberTrades;
-    double lowestPrice = orderBook.getLowPrice(askEntries);
-    std::cout << lowestPrice;
-
-    for (OrderBookEntry& asks: askEntries)
+    auto OrderBook = match.getOrderBook();
+    for (auto& curr: currMap)
     {
-        if (asks.price == lowestPrice && 
-        tradeCurrMap[product] < lossMap[product] &&
-        tradeCurrMap[product] > roiMap[product])
-        {
-            OrderBookEntry OBE = CSVReader::stringToOBE(timestamp, asks.product, OrderBookType::ask, std::to_string(lowestPrice), std::to_string(amountToTrade));
-            orderBook.insertOrder(OBE);
-
-            tradeCurrMap[product] -= amountToTrade;
-            tradeCount ++;
-
-            // TODO: 
-            // 1. Will need to remove order from order book once trade processed (OrderBook::removeOrder())
-            // 2. Duduct the traded amount from the currMap
-            // 3. Count the trade in a variable
-        }
+        auto currOrders = OrderBook[curr.first]['orderType']['ask'];
+        std::cout << currOrders.size() << std::endl;
     }
 }
 
-// void AutoTrader::autoAsk()
-// {
-//     std::cout << "Make A Ask - Enter the amout: *product, price, amount* e.g. ETH/BTC,1,0.5" << std::endl;
-//     std::string askInput;
-//     std::getline(std::cin, askInput);
-//     std::vector<std::string> tokens = CSVReader::tokenise(askInput, ',');
-//     if (tokens.size() != 3)
-//     {
-//         std::cout << "Invalid input, please refer to the example e.g. ETH/BTC,1,0.5" << std::endl;
-//     }
-//     else
-//     {
-//         try{
-//             OrderBookEntry OBE = CSVReader::stringToOBE(currentTime, tokens[0], OrderBookType::ask, tokens[1], tokens[2]);
-//             OBE.username = "simuser";
-//             if (wallet.fulfillOrder(OBE))
-//             {
-//                 std::cout << "Wallet can fullful order." << std::endl;
-//             }
-//             else
-//             {
-//                 std::cout << "==Insuficient funds==" << std::endl;
-//             }
-//             orderBook.insertOrder(OBE);
-//         }catch(const std::exception& e)
-//         {
-//             std::cout << "MerkelMain::makeAsk Invalid input."<< std::endl;
-//         }
-//     }
-// }
 
-void AutoTrader::autoBid(std::string product, std::string timestamp)
-{
-    /** Makes automatic bids in orderbook
-     * 1. Gets all bids from order book
-     * 2. Finds the cheapest bids for each product at current time point
-     * 3. Creates orderbookentry and inserts order into orderbook
-     *      - If ROI not reached
-     *      - If stop loss not reached */ 
-    std::vector<OrderBookEntry> askEntries = orderBook.getOrdersOfCurrency(OrderBookType::bid,
-                                                                product, timestamp);
 
-    double amountToTrade = currMap[product] / numberTrades;
-    double lowestPrice = orderBook.getLowPrice(askEntries);
-    std::cout << lowestPrice;
+/** Makes automatic asks in orderbook
+ * 1. Gets all asks from order book
+ * 2. Finds the cheapest asks for each product at current time point
+ * 3. Creates orderbookentry and inserts order into orderbook
+ *      - If ROI not reached
+ *      - If stop loss not reached */ 
 
-    for (OrderBookEntry& asks: askEntries)
-    {
-        if (asks.price == lowestPrice) 
-        {
-            // TODO: - Will need to remove order from order book once trade processed
-            OrderBookEntry OBE = CSVReader::stringToOBE(timestamp, asks.product, OrderBookType::ask, std::to_string(lowestPrice), std::to_string(amountToTrade));
-            orderBook.insertOrder(OBE);
-        }
-    }
-}
+
+
 
 void AutoTrader::autoStart()
 {
@@ -308,16 +191,6 @@ void AutoTrader::autoStart()
      * Once ROI reaches, exit
      * Return the wallet amount at the end along with number of trades made
      * (May need a separte cpp for stratergies etc) */ 
-
-    AutoTrader::autoAsk("BTC/ETH","2020/03/17 17:01:24.88449"); // FIXME: This is causing segementaiton error
-    std::cout << "Start activate" << std::endl;
-    isAutoTraderRunning = true;
-    while (isAutoTraderRunning)
-    {
-        AutoTrader::autoStop();
-        // Code that runs the auto trader program
-    }
-    std::cout << "Start stopped" << std::endl;
 }
 
 void AutoTrader::autoStop()
