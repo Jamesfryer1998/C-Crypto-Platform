@@ -23,7 +23,7 @@ class AutoTrader{
     private:
         Wallet wallet;
         MatchSystem match;
-        
+
         // Maps
         std::map<std::string, double> currMap;
         std::map<std::string, double> tradeCurrMap; // Probs need to change these variables,
@@ -47,5 +47,6 @@ class AutoTrader{
         void currencySelection();
         int getUserOption(bool verbose=true);
 
+        
         void generateTrades();
 };

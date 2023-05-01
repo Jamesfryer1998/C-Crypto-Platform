@@ -17,6 +17,7 @@ class MatchSystem{
         int readCSV_NEW(std::string fileName);
         OrderBookEntry csvStringToOBE(std::vector<std::string> tokens);
         std::vector<std::string> tokenise(std::string csvLine, char separator);
+        std::vector<std::string> getProductsOfCurrency(std::string currency);
 
         // OrderBook Operations
         void removeOrder(std::string product, std::string type);

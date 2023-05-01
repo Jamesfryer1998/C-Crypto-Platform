@@ -120,6 +120,20 @@ int MatchSystem::readCSV_NEW(std::string fileName)
     return loadCount;
 } 
 
+std::vector<std::string> MatchSystem::getProductsOfCurrency(std::string currency)
+{
+    std::vector<std::string> currVec;
+    for (auto& product: orderBook)
+    {
+        std::vector<std::string> tokens = tokenise(product.first, '/');
+        if (currency == tokens[0] || currency == tokens[1])
+        {
+            currVec.push_back(product.first); 
+        }
+    }
+    return currVec;
+}
+
 void MatchSystem::clearOrderBook()
 {
     orderBook.clear();

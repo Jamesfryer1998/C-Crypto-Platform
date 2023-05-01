@@ -166,8 +166,13 @@ void AutoTrader::generateTrades()
     auto OrderBook = match.getOrderBook();
     for (auto& curr: currMap)
     {
-        auto currOrders = OrderBook[curr.first]['orderType']['ask'];
-        std::cout << currOrders.size() << std::endl;
+        auto productCurrency = match.getProductsOfCurrency(curr.first);
+        for (std::string& product: productCurrency)
+        {
+            auto currOrders = OrderBook[product];
+            
+            std::cout << product << " : " << currOrders.size() << std::endl;
+        }
     }
 }
 
@@ -179,8 +184,6 @@ void AutoTrader::generateTrades()
  * 3. Creates orderbookentry and inserts order into orderbook
  *      - If ROI not reached
  *      - If stop loss not reached */ 
-
-
 
 
 void AutoTrader::autoStart()
