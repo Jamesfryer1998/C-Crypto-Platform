@@ -12,6 +12,7 @@ class MerkelMain
         void init();
 
     private:
+        // Main Operations
         void printMenu();
         void printHelp();
         void printOrderBookStats();
@@ -28,11 +29,9 @@ class MerkelMain
         int computeHighPrice(std::vector<double> prices);
         int computePriceSpread(std::vector<double> prices);
 
+        // Variables and Class initialisation 
         std::string currentTime;
-
         OrderBook orderBook{"20200317.csv"};
-
         Wallet wallet;
-
         AutoTrader autoTrade{orderBook};
 };

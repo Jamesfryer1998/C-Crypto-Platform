@@ -100,6 +100,7 @@ void AutoTrader::invalidChoice()
  * 2. Check if this currency is in wallet (tokenise their answer, and use tokens[0])
  * 3. If TRUE when add the currency to the list
  * 4. If false then call invalidChoice() and ask to try again */ 
+
 void AutoTrader::currencySelection()
 {
     std::cout << "Please enter a currency you wish to trade with: (USDT,1000) '/'  to exit" << std::endl;

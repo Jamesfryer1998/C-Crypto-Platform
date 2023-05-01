@@ -16,8 +16,10 @@ class OrderBookEntry
                         double _amount,
                         std::string username = "dataset");
 
+        // OrderBookEntry Operations
         static OrderBookType StringToOrderBookType(std::string s);
 
+        // Sorting Algorithms
         static bool comapreByTimeStamp(OrderBookEntry& order1, OrderBookEntry& order2)
         {
             return order1.timestamp < order2.timestamp;
@@ -30,7 +32,6 @@ class OrderBookEntry
         {
             return order1.price > order2.price;
         }
-
         static bool comparePriceTimestamp(const OrderBookEntry& order1, const OrderBookEntry& order2) 
         {
             if (order1.price == order2.price)
@@ -47,6 +48,7 @@ class OrderBookEntry
             }
         }
         
+        // Input Variables
         std::string timestamp;
         std::string product;
         OrderBookType type;

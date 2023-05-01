@@ -7,13 +7,16 @@ class Wallet
 {
     public:
         Wallet();
-        bool insertCurrency(std::string type, double amount);
-        bool removeCurrency(std::string, double amount);
-        bool containsCurrency(std::string type, double amount);
-        bool fulfillOrder(OrderBookEntry order);
-        void processSale(OrderBookEntry sale);
+
+        // Wallet Operations
         std::string toString();
+        void processSale(OrderBookEntry sale);
+        bool fulfillOrder(OrderBookEntry order);
+        bool removeCurrency(std::string, double amount);
+        bool insertCurrency(std::string type, double amount);
+        bool containsCurrency(std::string type, double amount);
 
     private:
+        // Variables
         std::map<std::string, double> currencies;
 };

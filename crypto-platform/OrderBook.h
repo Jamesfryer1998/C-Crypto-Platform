@@ -8,31 +8,28 @@
 class OrderBook
 {
     public:
-    /** construct, reading a csv data file */ 
         OrderBook(std::string fileName);
-    /** return vector of all knwon products in dataset */ 
+
+        // OrderBook Operations
+        void insertOrder(OrderBookEntry& order);
+        void removeOrder(OrderBookEntry& order);
         std::vector<std::string> getKnownProducts();
-    /** return vector of Orders according to the sent filters */ 
         std::vector<OrderBookEntry> getOrders(OrderBookType type,
                                               std::string product, 
                                               std::string timestamp);
+        std::vector<OrderBookEntry> matchSystem(std::string product, std::string timestamp);
 
+
+        // THIS NEEDS TO GO!!!!!!!!!!!!!!!!!!!!!!!
         std::vector<OrderBookEntry> getOrdersOfCurrency(OrderBookType type,
                                               std::string product, 
                                               std::string timestamp);
 
-        /** Gets the first timestamp from the CSV */ 
+        // Timestamp Operations
         std::string getEarliestTime();
-        /** returns the next time after the sent time in the orderBook.
-         * If there is no next timestamp,
-         * wraps around back to the start. */ 
         std::string getNextTime(std::string timestamp);
 
-        void insertOrder(OrderBookEntry& order);
-        void removeOrder(OrderBookEntry& order);
-
-        std::vector<OrderBookEntry> matchSystem(std::string product, std::string timestamp);
-
+        // Statistical OrderBook Operations
         static double getHighPrice(std::vector<OrderBookEntry>& orders);
         static double getLowPrice(std::vector<OrderBookEntry>& orders);
         static double getAvgPrice(std::vector<OrderBookEntry>& orders);
