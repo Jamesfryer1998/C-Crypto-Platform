@@ -51,12 +51,22 @@ double Stratergies::adjust_trade_size(double base_trade_size, double trade_size_
     return base_trade_size * trade_size_multiplier;
 }
 
+// Mean reversion: This approach involves buying assets that have fallen in price and 
+// selling assets that have risen in price. This strategy assumes that prices will 
+// eventually return to their mean, or average, value.
 void Stratergies::meanReversion()
 {
 
 }
 
+
+// Breakout trading: This approach involves identifying price levels at which a 
+// cryptocurrency has historically struggled to move past, and trading in the direction
+//  of the breakout when the price breaks through that level.
+
 void Stratergies::breakout()
 {
 
 }
+
+
