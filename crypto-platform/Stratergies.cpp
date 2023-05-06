@@ -1,4 +1,4 @@
-#include <cmath>
+#include <numeric>
 #include <iostream>
 #include <crypto-platform/Stratergies.h>
 
@@ -16,12 +16,6 @@ double Stratergies::percentTradeSize(int percent, double currencyAmount)
 {
     return currencyAmount * percent / 100;
 }
-
-// double Stratergies::volatilityTradeSize(int percent, double currencyAmount)
-// {
-//     return currencyAmount * percent / 100;
-// }
-
 
 double Stratergies::volatilityTradeSize(const double* prices, int num_prices)
 {
@@ -51,12 +45,25 @@ double Stratergies::adjust_trade_size(double base_trade_size, double trade_size_
     return base_trade_size * trade_size_multiplier;
 }
 
+double Stratergies::calcAveragePrice(std::vector<OrderBookEntry> orders)
+{
+    double sum = std::accumulate(orders.begin(), orders.end(), 0.0, [](double a, const OrderBookEntry& b) {
+        return a + b.price;
+    });
+    return sum / orders.size();
+}
+
 // Mean reversion: This approach involves buying assets that have fallen in price and 
 // selling assets that have risen in price. This strategy assumes that prices will 
 // eventually return to their mean, or average, value.
-void Stratergies::meanReversion()
-{
-
+std::string Stratergies::meanReversion(double current_price, double historical_average_price) {
+    if (current_price > historical_average_price) {
+        return "sell";
+    } else if (current_price < historical_average_price) {
+        return "buy";
+    } else {
+        return "hold";
+    }
 }
 
 

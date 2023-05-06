@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <map>
+#include <crypto-platform/OrderBookEntry.h>
 
 class Stratergies
 {
@@ -14,9 +15,10 @@ class Stratergies
         double volatilityTradeSize(const double* prices, int num_prices);
         double calculate_trade_size_multiplier(double volatility);
         double adjust_trade_size(double base_trade_size, double trade_size_multiplier);
+        double calcAveragePrice(std::vector<OrderBookEntry> orders);
 
         // Stratergies 
-        void meanReversion();
+        std::string meanReversion(double current_price, double historical_average_price);
         void breakout();
 
     private:
