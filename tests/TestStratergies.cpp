@@ -115,3 +115,98 @@ TEST(StratergiesTest, AveragePrice) {
         EXPECT_EQ(strat.calcAveragePrice(orders), 3);
     }
 }
+
+TEST(StratergiesTest, StandardDeviation) {
+    MatchSystem match;
+    Stratergies strat;
+    {
+        // Create 3 asks with a price of 3
+        OrderBookEntry entry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,2);
+        OrderBookEntry entry2("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,2,2);
+        OrderBookEntry entry3("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,3,2);
+
+        // Add asks into OrderBook
+        match.inserOrder("BTC/ETH", "ask", entry1);
+        match.inserOrder("BTC/ETH", "ask", entry2);
+        match.inserOrder("BTC/ETH", "ask", entry3);
+
+        // Get the order book
+        auto orders = match.getOrderBook()["BTC/ETH"]["orderType"]["ask"];
+
+        // Standard deviation is calcualted and rounded to 2 decimal places
+        EXPECT_EQ(strat.calcStandardDeviation(orders), 0.82);
+    }
+
+    match.clearOrderBook();
+
+    {
+        // Create 3 bids with a price of 3
+        OrderBookEntry entry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,1,2);
+        OrderBookEntry entry2("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,2,2);
+        OrderBookEntry entry3("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,3,2);
+
+        // Add asks into OrderBook
+        match.inserOrder("BTC/ETH", "bid", entry1);
+        match.inserOrder("BTC/ETH", "bid", entry2);
+        match.inserOrder("BTC/ETH", "bid", entry3);
+
+        // Get the order book
+        auto orders =match.getOrderBook()["BTC/ETH"]["orderType"]["bid"];
+
+        // Standard deviation is calcualted and rounded to 2 decimal places
+        EXPECT_EQ(strat.calcStandardDeviation(orders), 0.82);
+    }
+}
+
+TEST(StratergiesTest, MeanReversion) {
+    MatchSystem match;
+    Stratergies strat;
+    {
+        // Create 3 asks with a price of 3
+        OrderBookEntry entry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,2);
+        OrderBookEntry entry2("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,2,2);
+        OrderBookEntry entry3("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,3,2);
+
+        // Add asks into OrderBook
+        match.inserOrder("BTC/ETH", "ask", entry1);
+        match.inserOrder("BTC/ETH", "ask", entry2);
+        match.inserOrder("BTC/ETH", "ask", entry3);
+
+        // Get the order book
+        auto orders = match.getOrderBook()["BTC/ETH"]["orderType"]["ask"];
+        double avgPrice = strat.calcAveragePrice(orders);
+
+        // AvgPrice is 2, so entry1 price is > than avg price so we sell
+        EXPECT_EQ(strat.meanReversion(avgPrice, entry1.price),0);
+        // AvgPrice is 2, so entry2 price is = to avg price so we hold
+        EXPECT_EQ(strat.meanReversion(avgPrice, entry2.price),2);
+        // AvgPrice is 2, so entry3 price is < than avg price so we buy
+        EXPECT_EQ(strat.meanReversion(avgPrice, entry3.price),1);
+    }
+
+    match.clearOrderBook();
+
+    {
+        // Create 3 bids with a price of 3
+        OrderBookEntry entry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,1,2);
+        OrderBookEntry entry2("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,2,2);
+        OrderBookEntry entry3("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,3,2);
+
+        // Add asks into OrderBook
+        match.inserOrder("BTC/ETH", "bid", entry1);
+        match.inserOrder("BTC/ETH", "bid", entry2);
+        match.inserOrder("BTC/ETH", "bid", entry3);
+
+        // Get the order book
+        auto orders =match.getOrderBook()["BTC/ETH"]["orderType"]["bid"];
+        double avgPrice = strat.calcAveragePrice(orders);
+        double stdev = strat.calcStandardDeviation(orders);
+
+        // AvgPrice is 2, so entry1 price is in the upper bounds so we buy
+        EXPECT_EQ(strat.boundReversion(avgPrice, entry1.price, stdev), 0);
+        // AvgPrice is 2, so entry1 price is = avg price
+        EXPECT_EQ(strat.boundReversion(avgPrice, entry2.price, stdev), 2);
+        // AvgPrice is 2, so entry1 price is in the lower bounds so we sell
+        EXPECT_EQ(strat.boundReversion(avgPrice, entry3.price, stdev), 1);
+    }
+}

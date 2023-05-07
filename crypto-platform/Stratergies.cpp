@@ -45,26 +45,71 @@ double Stratergies::adjust_trade_size(double base_trade_size, double trade_size_
     return base_trade_size * trade_size_multiplier;
 }
 
-double Stratergies::calcAveragePrice(std::vector<OrderBookEntry> orders)
+double Stratergies::calcAveragePrice(std::vector<OrderBookEntry>& orders)
 {
     double sum = std::accumulate(orders.begin(), orders.end(), 0.0, [](double a, const OrderBookEntry& b) {
         return a + b.price;
     });
+
+
+
     return sum / orders.size();
 }
 
-// Mean reversion: This approach involves buying assets that have fallen in price and 
-// selling assets that have risen in price. This strategy assumes that prices will 
-// eventually return to their mean, or average, value.
-std::string Stratergies::meanReversion(double current_price, double historical_average_price) {
-    if (current_price > historical_average_price) {
-        return "sell";
-    } else if (current_price < historical_average_price) {
-        return "buy";
-    } else {
-        return "hold";
+// double Stratergies::calcStandardDeviation(std::vector<OrderBookEntry>& orders)
+// {
+
+// }
+
+double Stratergies::calcStandardDeviation(const std::vector<OrderBookEntry>& entries) 
+{
+    std::vector<double> prices(entries.size());
+    std::transform(entries.begin(), entries.end(), prices.begin(),
+                   [](const OrderBookEntry& entry) { return entry.price; });
+    double sum = std::accumulate(prices.begin(), prices.end(), 0.0);
+    double mean = sum / prices.size();
+    double sq_sum = std::inner_product(prices.begin(), prices.end(), prices.begin(), 0.0);
+    double stdev = std::sqrt(sq_sum / prices.size() - mean * mean);
+    return round(stdev * 100.0) / 100.0;
+}
+
+/* Mean reversion staratergy
+0 = sell
+1 = buy
+2 = hold*/
+int Stratergies::meanReversion(double currentPrice, double histAveragePrice)
+{
+    if (currentPrice > histAveragePrice) 
+    {
+        return 0;
+    } 
+    else if (currentPrice < histAveragePrice) 
+    {
+        return 1;
+    } 
+    else {
+        return 2;
     }
 }
+
+int Stratergies::boundReversion(double currentPrice, double histAveragePrice, double stdev) 
+{
+    double upper_band = histAveragePrice + stdev;
+    double lower_band = histAveragePrice - stdev;
+    
+    if (currentPrice > upper_band) {
+        return 0;
+    } else if (currentPrice < lower_band) {
+        return 1;
+    } else {
+        return 2;
+    }
+
+}
+
+
+
+
 
 
 // Breakout trading: This approach involves identifying price levels at which a 
