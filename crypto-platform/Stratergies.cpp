@@ -107,11 +107,6 @@ int Stratergies::boundReversion(double currentPrice, double histAveragePrice, do
 
 }
 
-
-
-
-
-
 // Breakout trading: This approach involves identifying price levels at which a 
 // cryptocurrency has historically struggled to move past, and trading in the direction
 //  of the breakout when the price breaks through that level.
@@ -119,6 +114,23 @@ int Stratergies::boundReversion(double currentPrice, double histAveragePrice, do
 void Stratergies::breakout()
 {
 
+}
+
+
+// Used to generate a ordebookentry from the product, time stamp, price, ask and amount:
+// Timestamp - determined from the current timestamp
+// Product - determined from the current product in currMap
+// Price - From the lowest ask price or from the average price (not sure)
+// Ask - as were generating a ask order
+// Amount - Determined from one of the trade amount methods chosen by the User
+OrderBookEntry Stratergies::generateAsk()
+{
+
+}
+
+OrderBookEntry Stratergies::generateBid()
+{
+    
 }
 
 

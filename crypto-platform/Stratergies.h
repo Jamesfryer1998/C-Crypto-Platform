@@ -26,6 +26,11 @@ class Stratergies
         int boundReversion(double current_price, double historical_average_price, double stdev);
         void breakout();
 
+        // Order Creation
+        OrderBookEntry generateAsk();
+        OrderBookEntry SgenerateAsk();
+
+
     private:
 
 };
