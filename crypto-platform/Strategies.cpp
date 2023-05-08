@@ -17,26 +17,10 @@ double Strategies::percentTradeSize(int percent, double currencyAmount)
     return currencyAmount * percent / 100;
 }
 
-double Strategies::volatilityTradeSize(const double* prices, int num_prices)
-{
-    // Calculate the standard deviation of prices
-    double sum = 0;
-    for (int i = 0; i < num_prices; i++) {
-        sum += prices[i];
-    }
-    double mean = sum / num_prices;
-    double variance = 0;
-    for (int i = 0; i < num_prices; i++) {
-        variance += pow(prices[i] - mean, 2);
-    }
-    double std_dev = sqrt(variance / num_prices);
-    return std_dev;
-}
-
-double Strategies::calculate_trade_size_multiplier(double volatility) 
+double Strategies::calculate_trade_size_multiplier(double stdev) 
 {
     // Calculate the trade size multiplier based on volatility
-    return 1 + (volatility / 100);
+    return 1 + (stdev / 100);
 }
 
 double Strategies::adjust_trade_size(double base_trade_size, double trade_size_multiplier) 
@@ -52,11 +36,6 @@ double Strategies::calcAveragePrice(const std::vector<OrderBookEntry>& orders)
     });
     return sum / orders.size();
 }
-
-// double Stratergies::calcStandardDeviation(std::vector<OrderBookEntry>& orders)
-// {
-
-// }
 
 double Strategies::calcStandardDeviation(const std::vector<OrderBookEntry>& entries) 
 {
@@ -97,6 +76,10 @@ int Strategies::meanReversion(double currentPrice, double histAveragePrice)
     }
 }
 
+/* Upper/Lower Bound reversion staratergy
+0 = sell
+1 = buy
+2 = hold*/
 int Strategies::boundReversion(double currentPrice, double histAveragePrice, double stdev) 
 {
     double upper_band = histAveragePrice + stdev;
@@ -112,10 +95,10 @@ int Strategies::boundReversion(double currentPrice, double histAveragePrice, dou
 
 }
 
-// Breakout trading: This approach involves identifying price levels at which a 
-// cryptocurrency has historically struggled to move past, and trading in the direction
-// of the breakout when the price breaks through that level.
 
+/**Breakout stretegy
+ * 0 = False (no breakout)
+ * 1 = True (breakout occured)*/
 int Strategies::breakOut(const std::vector<OrderBookEntry>& entries, double resistance) {
     // Check if the current price has broken through the resistance level
     double current_price = entries.back().price;
@@ -125,7 +108,6 @@ int Strategies::breakOut(const std::vector<OrderBookEntry>& entries, double resi
         return 0;
     }
 }
-
 
 // Used to generate a ordebookentry from the product, time stamp, price, ask and amount:
 // Timestamp - determined from the current timestamp
