@@ -92,14 +92,13 @@ int Strategies::boundReversion(double currentPrice, double histAveragePrice, dou
     } else {
         return 2;
     }
-
 }
-
 
 /**Breakout stretegy
  * 0 = False (no breakout)
  * 1 = True (breakout occured)*/
-int Strategies::breakOut(const std::vector<OrderBookEntry>& entries, double resistance) {
+int Strategies::breakOut(const std::vector<OrderBookEntry>& entries, double resistance) 
+{
     // Check if the current price has broken through the resistance level
     double current_price = entries.back().price;
     if (current_price > resistance) {

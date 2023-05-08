@@ -12,7 +12,6 @@ TEST(StrategiesTest, FixedTradeSize) {
         // 10/1000 is equal to 0.01
         EXPECT_EQ(tradeSize, 0.01);
     }
-
     {
         // Generate trade size from function using 1000 trades and units of 10 currency
         double tradeSize = strat.fixedTradeSize(1000, 10);
@@ -32,7 +31,6 @@ TEST(StrategiesTest, PercentTradeSize) {
         // 10 * 10 / 100 is equal to 1
         EXPECT_EQ(tradeSize, 1);
     }
-
     {
         // Generate trade size form function based on 50%
         double tradeSize = strat.percentTradeSize(50, 10);
@@ -40,7 +38,6 @@ TEST(StrategiesTest, PercentTradeSize) {
         // 10 * 50 / 100 is equal to 5
         EXPECT_EQ(tradeSize, 5);
     }
-
     {
         // Generate trade size form function based on 0%
         double tradeSize = strat.percentTradeSize(0, 10);
@@ -48,7 +45,6 @@ TEST(StrategiesTest, PercentTradeSize) {
         // 10 * 0 / 100 is equal to 0
         EXPECT_EQ(tradeSize, 0);
     }
-
     {
         // Generate trade size form function based on 100%
         double tradeSize = strat.percentTradeSize(100, 10);
@@ -253,4 +249,27 @@ TEST(StrategiesTest, MeanReversion) {
     }
 }
 
+TEST(StrategiesTest, BreakOut) {
+    MatchSystem match;
+    Strategies strat;
+    {
+        // Create 3 asks with a price of 3
+        OrderBookEntry entry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,2);
+        OrderBookEntry entry2("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,2,2);
+        OrderBookEntry entry3("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,3,2);
 
+        // Add asks into OrderBook
+        match.inserOrder("BTC/ETH", "ask", entry1);
+        match.inserOrder("BTC/ETH", "ask", entry2);
+        match.inserOrder("BTC/ETH", "ask", entry3);
+
+        // Get the order book
+        auto orders = match.getOrderBook()["BTC/ETH"]["orderType"]["ask"];
+        double resistance = strat.calcResistanceLevel(orders);
+
+        // AvgPrice is 2, so entry1 price is > than avg price so we sell
+        EXPECT_EQ(strat.breakOut(orders, resistance), 0);
+        // AvgPrice is 2, so entry2 price is = to avg price so we hold
+        EXPECT_EQ(strat.breakOut(orders, resistance), 0);
+    }
+}
