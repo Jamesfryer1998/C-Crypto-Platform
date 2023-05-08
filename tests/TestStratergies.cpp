@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include <crypto-platform/Stratergies.h>
+#include <crypto-platform/Strategies.h>
 #include <crypto-platform/MatchingSystem.h>
 
-TEST(StratergiesTest, FixedTradeSize) {
-    Stratergies strat;
+TEST(StrategiesTest, FixedTradeSize) {
+    Strategies strat;
 
     {
         // Generate trade size from function using 1000 trades and units of 10 currency
@@ -22,8 +22,8 @@ TEST(StratergiesTest, FixedTradeSize) {
     }
 }
 
-TEST(StratergiesTest, PercentTradeSize) {
-    Stratergies strat;
+TEST(StrategiesTest, PercentTradeSize) {
+    Strategies strat;
 
     {
         // Generate trade size form function based on 10%
@@ -74,9 +74,9 @@ TEST(StratergiesTest, PercentTradeSize) {
     
 // }
 
-TEST(StratergiesTest, AveragePrice) {
+TEST(StrategiesTest, AveragePrice) {
     MatchSystem match;
-    Stratergies strat;
+    Strategies strat;
     {
         // Create 3 asks with a price of 3
         OrderBookEntry entry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,3,2);
@@ -116,9 +116,9 @@ TEST(StratergiesTest, AveragePrice) {
     }
 }
 
-TEST(StratergiesTest, StandardDeviation) {
+TEST(StrategiesTest, StandardDeviation) {
     MatchSystem match;
-    Stratergies strat;
+    Strategies strat;
     {
         // Create 3 asks with a price of 3
         OrderBookEntry entry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,2);
@@ -158,9 +158,51 @@ TEST(StratergiesTest, StandardDeviation) {
     }
 }
 
-TEST(StratergiesTest, MeanReversion) {
+TEST(StrategiesTest, ResistanceLevel) {
     MatchSystem match;
-    Stratergies strat;
+    Strategies strat;
+    {
+        // Create 3 asks with a price of 3
+        OrderBookEntry entry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,3,2);
+        OrderBookEntry entry2("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,3,2);
+        OrderBookEntry entry3("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,3,2);
+
+        // Add asks into OrderBook
+        match.inserOrder("BTC/ETH", "ask", entry1);
+        match.inserOrder("BTC/ETH", "ask", entry2);
+        match.inserOrder("BTC/ETH", "ask", entry3);
+
+        // Get the order book
+        auto orders = match.getOrderBook()["BTC/ETH"]["orderType"]["ask"];
+
+        // Standard deviation is calcualted and rounded to 2 decimal places
+        EXPECT_EQ(strat.calcResistanceLevel(orders), 3);
+    }
+
+    match.clearOrderBook();
+
+    {
+        // Create 3 bids with a price of 3
+        OrderBookEntry entry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,3,2);
+        OrderBookEntry entry2("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,3,2);
+        OrderBookEntry entry3("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::bid,3,2);
+
+        // Add asks into OrderBook
+        match.inserOrder("BTC/ETH", "bid", entry1);
+        match.inserOrder("BTC/ETH", "bid", entry2);
+        match.inserOrder("BTC/ETH", "bid", entry3);
+
+        // Get the order book
+        auto orders =match.getOrderBook()["BTC/ETH"]["orderType"]["bid"];
+
+        // Standard deviation is calcualted and rounded to 2 decimal places
+        EXPECT_EQ(strat.calcResistanceLevel(orders), 3);
+    }
+}
+
+TEST(StrategiesTest, MeanReversion) {
+    MatchSystem match;
+    Strategies strat;
     {
         // Create 3 asks with a price of 3
         OrderBookEntry entry1("2020/03/17 17:01:24.884492","BTC/ETH",OrderBookType::ask,1,2);
@@ -210,3 +252,5 @@ TEST(StratergiesTest, MeanReversion) {
         EXPECT_EQ(strat.boundReversion(avgPrice, entry3.price, stdev), 1);
     }
 }
+
+
