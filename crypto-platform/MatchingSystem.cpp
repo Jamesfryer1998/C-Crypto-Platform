@@ -183,7 +183,6 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
     OrderBookType type = order.type;
     std::string product = order.product;
     std::string timestamp = order.timestamp;
-
     std::vector<std::pair<OrderBookEntry, OrderBookEntry>> matched_orders;
 
     // If order is a bid, check the asks

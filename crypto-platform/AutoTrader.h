@@ -3,6 +3,7 @@
 #include <crypto-platform/OrderBook.h>
 #include <crypto-platform/Wallet.h>
 #include <crypto-platform/MatchingSystem.h>
+#include <crypto-platform/Strategies.h>
 #include <vector>
 #include <string>
 #include <map>
@@ -23,6 +24,7 @@ class AutoTrader{
     private:
         Wallet wallet;
         MatchSystem match;
+        Strategies strat;
 
         // Maps
         std::map<std::string, double> currMap;
@@ -35,7 +37,6 @@ class AutoTrader{
         int stopLossOption;
         // int tradeCount = 0;// Hard coded for now, allow a user input
         // int numberTrades = 1000; // Used to define the amount the trade
-        bool isAutoTraderRunning = false;
 
         // User input
         void ROI();

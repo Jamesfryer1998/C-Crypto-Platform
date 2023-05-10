@@ -1,6 +1,7 @@
 #include <crypto-platform/AutoTrader.h>
 #include <crypto-platform/OrderBook.h>
 #include <crypto-platform/CSVReader.h>
+#include <crypto-platform/Strategies.h>
 
 #include <iostream>
 #include <vector>
@@ -134,7 +135,6 @@ void AutoTrader::currencySelection()
 /** Calculate final wallet amount from stop loss perfentage */ 
 void AutoTrader::stopLoss()
 {
-    // TODO:
     std::cout << "Please enter your prefered % stop loss: ";
     stopLossOption = getUserOption(false);
 
@@ -149,7 +149,6 @@ void AutoTrader::stopLoss()
 /** Calculate final wallet about from ROI percentage */ 
 void AutoTrader::ROI()
 {
-    // TODO:
     std::cout << "Please enter your prefered % ROI: ";
     roi = getUserOption(false);
 
@@ -163,19 +162,29 @@ void AutoTrader::ROI()
 
 void AutoTrader::generateTrades()
 {
-    auto OrderBook = match.getOrderBook();
+    auto orderBook = match.getOrderBook();
+    double histAveragePrice = strat.calcAveragePrice(orderBook)
+
     for (auto& curr: currMap)
     {
         auto productCurrency = match.getProductsOfCurrency(curr.first);
         for (std::string& product: productCurrency)
         {
-            auto currOrders = OrderBook[product];
+            auto currencyOrders = orderBook[product];
             
-            std::cout << product << " : " << currOrders.size() << std::endl;
+            // FIXME:
+            // Major design flaw, we are now looping through all the asks and then bids
+            // We need a mixed orderbook, preferable as it comes in
+            for (OrderBookEntry& currentOrder: currencyOrders["orderType"]["ask"], currencyOrders["orderType"]["bid"])
+            {
+
+                std::cout << currentOrder.price << std::endl;
+            }
+
+            // std::cout << product << " : " << currencyOrders["orderType"]["ask"].size() << std::endl;
         }
     }
 }
-
 
 
 /** Makes automatic asks in orderbook
@@ -184,10 +193,9 @@ void AutoTrader::generateTrades()
  * 3. Creates orderbookentry and inserts order into orderbook
  *      - If ROI not reached
  *      - If stop loss not reached */ 
-
-
 void AutoTrader::autoStart()
 {
+    AutoTrader::generateTrades();
     /** Loop through currMap and create a orderbook entry ask/bid
      * Keep in mind the stop loss and the ROI
      * Once stop loss reached, exit
@@ -198,7 +206,7 @@ void AutoTrader::autoStart()
 
 void AutoTrader::autoStop()
 {
-    isAutoTraderRunning = false;
+
 }
 
 bool AutoTrader::determineEnd()

@@ -14,6 +14,7 @@ MerkelMain::MerkelMain()
 
 void MerkelMain::init()
 {
+    system("clear");
     int userOption;
     currentTime = orderBook.getEarliestTime();
     wallet.insertCurrency("BTC", 10);
