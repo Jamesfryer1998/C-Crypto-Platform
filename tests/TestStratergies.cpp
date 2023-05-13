@@ -215,11 +215,11 @@ TEST(StrategiesTest, MeanReversion) {
         double avgPrice = strat.calcAveragePrice(orders);
 
         // AvgPrice is 2, so entry1 price is > than avg price so we sell
-        EXPECT_EQ(strat.meanReversion(avgPrice, entry1.price),0);
+        EXPECT_EQ(strat.meanReversion(entry1, avgPrice),1);
         // AvgPrice is 2, so entry2 price is = to avg price so we hold
-        EXPECT_EQ(strat.meanReversion(avgPrice, entry2.price),2);
+        EXPECT_EQ(strat.meanReversion(entry2, avgPrice),2);
         // AvgPrice is 2, so entry3 price is < than avg price so we buy
-        EXPECT_EQ(strat.meanReversion(avgPrice, entry3.price),1);
+        EXPECT_EQ(strat.meanReversion(entry3, avgPrice),0);
     }
 
     match.clearOrderBook();
@@ -241,11 +241,11 @@ TEST(StrategiesTest, MeanReversion) {
         double stdev = strat.calcStandardDeviation(orders);
 
         // AvgPrice is 2, so entry1 price is in the upper bounds so we buy
-        EXPECT_EQ(strat.boundReversion(avgPrice, entry1.price, stdev), 0);
+        EXPECT_EQ(strat.boundReversion(entry1.price, avgPrice, stdev), 1);
         // AvgPrice is 2, so entry1 price is = avg price
-        EXPECT_EQ(strat.boundReversion(avgPrice, entry2.price, stdev), 2);
+        EXPECT_EQ(strat.boundReversion(entry2.price, avgPrice,  stdev), 2);
         // AvgPrice is 2, so entry1 price is in the lower bounds so we sell
-        EXPECT_EQ(strat.boundReversion(avgPrice, entry3.price, stdev), 1);
+        EXPECT_EQ(strat.boundReversion(entry3.price, avgPrice,  stdev), 0);
     }
 }
 

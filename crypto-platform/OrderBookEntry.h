@@ -6,6 +6,11 @@
 
 enum class OrderBookType{bid, ask, asksale, bidsale, unknown};
 
+/** Timestamp
+ * Product
+ * OrderType
+ * Price 
+ * Amount */
 class OrderBookEntry
 {
     public:

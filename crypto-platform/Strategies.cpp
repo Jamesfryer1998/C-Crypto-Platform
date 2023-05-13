@@ -1,6 +1,7 @@
 #include <numeric>
 #include <iostream>
 #include <crypto-platform/Strategies.h>
+#include <crypto-platform/OrderBookEntry.h>
 
 Strategies::Strategies()
 {
@@ -61,13 +62,28 @@ double Strategies::calcResistanceLevel(const std::vector<OrderBookEntry>& orders
 0 = sell
 1 = buy
 2 = hold*/
-int Strategies::meanReversion(double currentPrice, double histAveragePrice)
+// int Strategies::meanReversion(double currentPrice, double histAveragePrice)
+// {
+//     if (currentPrice > histAveragePrice) 
+//     {
+//         return 0;
+//     } 
+//     else if (currentPrice < histAveragePrice) 
+//     {
+//         return 1;
+//     } 
+//     else {
+//         return 2;
+//     }
+// }
+
+int Strategies::meanReversion(OrderBookEntry currentOrder, double histAveragePrice)
 {
-    if (currentPrice > histAveragePrice) 
+    if (currentOrder.price > histAveragePrice) 
     {
         return 0;
     } 
-    else if (currentPrice < histAveragePrice) 
+    else if (currentOrder.price < histAveragePrice) 
     {
         return 1;
     } 
@@ -75,6 +91,7 @@ int Strategies::meanReversion(double currentPrice, double histAveragePrice)
         return 2;
     }
 }
+
 
 /* Upper/Lower Bound reversion staratergy
 0 = sell
@@ -114,14 +131,14 @@ int Strategies::breakOut(const std::vector<OrderBookEntry>& entries, double resi
 // Price - From the lowest ask price or from the average price (not sure)
 // Ask - as were generating a ask order
 // Amount - Determined from one of the trade amount methods chosen by the User
-// OrderBookEntry Stratergies::generateAsk()
-// {
-
-// }
-
-// OrderBookEntry Stratergies::generateBid()
-// {
-    
-// }
+OrderBookEntry Strategies::generateOrder( std::string timestamp,
+                                          std::string product,
+                                          std::string orderType,
+                                          double price,
+                                          double amount)
+{
+    OrderBookEntry entry(timestamp, product, OrderBookEntry::StringToOrderBookType(orderType), price, amount);
+    return entry;
+}
 
 

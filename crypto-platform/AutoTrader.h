@@ -48,6 +48,5 @@ class AutoTrader{
         void currencySelection();
         int getUserOption(bool verbose=true);
 
-        
         void generateTrades();
 };

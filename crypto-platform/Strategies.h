@@ -22,14 +22,16 @@ class Strategies
         double calcResistanceLevel(const std::vector<OrderBookEntry>& orders);
 
         // Stratergies
-        int meanReversion(double current_price, double historical_average_price);
+        int meanReversion(OrderBookEntry currentOrder, double historical_average_price);
         int boundReversion(double current_price, double historical_average_price, double stdev);
         int breakOut(const std::vector<OrderBookEntry>& entries, double resistance);
 
         // Order Creation
-        OrderBookEntry generateAsk();
-        OrderBookEntry generateBid();
-
+        OrderBookEntry generateOrder(std::string timestamp,
+                                     std::string product,
+                                     std::string orderType,
+                                     double price,
+                                     double amount);
 
     private:
 

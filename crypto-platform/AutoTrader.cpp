@@ -163,25 +163,63 @@ void AutoTrader::ROI()
 void AutoTrader::generateTrades()
 {
     auto orderBook = match.getOrderBook();
-    double histAveragePrice = strat.calcAveragePrice(orderBook)
 
     for (auto& curr: currMap)
     {
         auto productCurrency = match.getProductsOfCurrency(curr.first);
+        double tradeAmount = strat.fixedTradeSize(100, curr.second);
         for (std::string& product: productCurrency)
         {
             auto currencyOrders = orderBook[product];
+
+            // Find the average price for a product from asks and bids
+            double histAveragePrice = (strat.calcAveragePrice(currencyOrders["orderType"]["ask"]) + 
+                                       strat.calcAveragePrice(currencyOrders["orderType"]["bid"]))/2;
+
+            double lowPrice = OrderBook::getLowPrice(currencyOrders["orderType"]["ask"]);
+            double highPrice = OrderBook::getHighPrice(currencyOrders["orderType"]["bid"]);
+
+            // Placeholder neworder
+            // OrderBookEntry newOrder = {"", "", OrderBookType::ask, 1, 1};
             
             // FIXME:
             // Major design flaw, we are now looping through all the asks and then bids
             // We need a mixed orderbook, preferable as it comes in
             for (OrderBookEntry& currentOrder: currencyOrders["orderType"]["ask"], currencyOrders["orderType"]["bid"])
             {
+                int meanRev = strat.meanReversion(currentOrder, histAveragePrice);
 
-                std::cout << currentOrder.price << std::endl;
+                if (meanRev == 0)
+                {
+                    OrderBookEntry newOrder(currentOrder.timestamp,
+                                            currentOrder.product,
+                                            OrderBookType::ask,
+                                            lowPrice,
+                                            tradeAmount);
+
+                    match.matchEngine(newOrder);
+
+                    // std::cout << "Sell trade" << std::endl;
+                }
+                else if (meanRev == 1)
+                {
+                    OrderBookEntry newOrder(currentOrder.timestamp,
+                                            currentOrder.product,
+                                            OrderBookType::bid,
+                                            highPrice,
+                                            tradeAmount);
+                    match.matchEngine(newOrder);
+
+                    // std::cout << "Buy trade" << std::endl;
+                }
+                else if (meanRev == 2) continue;
+
             }
+            auto trades = match.getTrades();
+            std::cout << "num trades: " << trades.size() << std::endl;
 
-            // std::cout << product << " : " << currencyOrders["orderType"]["ask"].size() << std::endl;
+            // TODO:
+            // - Remove currency from currency wallet per trade with amount from trades
         }
     }
 }
