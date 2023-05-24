@@ -35,8 +35,6 @@ class AutoTrader{
         // Variables
         int roi;
         int stopLossOption;
-        // int tradeCount = 0;// Hard coded for now, allow a user input
-        // int numberTrades = 1000; // Used to define the amount the trade
 
         // User input
         void ROI();

@@ -198,8 +198,6 @@ void AutoTrader::generateTrades()
                                             tradeAmount);
 
                     match.matchEngine(newOrder);
-
-                    // std::cout << "Sell trade" << std::endl;
                 }
                 else if (meanRev == 1)
                 {
@@ -208,13 +206,13 @@ void AutoTrader::generateTrades()
                                             OrderBookType::bid,
                                             highPrice,
                                             tradeAmount);
-                    match.matchEngine(newOrder);
 
-                    // std::cout << "Buy trade" << std::endl;
+                    match.matchEngine(newOrder);
                 }
                 else if (meanRev == 2) continue;
 
             }
+            
             auto trades = match.getTrades();
             std::cout << "num trades: " << trades.size() << std::endl;
 

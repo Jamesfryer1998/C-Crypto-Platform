@@ -212,7 +212,3 @@ TEST(MatchSystemTest, TradeSystem) {
     }
 
 }
-
-
-// TODO:
-//  Look at andys TestOrderBook2 test cases to see some of the schenarios to test from

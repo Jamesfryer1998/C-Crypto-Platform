@@ -91,57 +91,6 @@ double OrderBook::getAvgPrice(std::vector<OrderBookEntry>& orders)
     return average_price;
 }
 
-void  OrderBook::testStats()
-{
-    int highPrice = 3;
-    int lowPrice = 1;
-    int avgPrice = 2;
-    int spread = 2;
-    std::vector<OrderBookEntry> orders;
-    OrderBookEntry entry1("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,1,1);
-    OrderBookEntry entry2("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,2,1);
-    OrderBookEntry entry3("2020/03/17 17:01:24.884492","ETH/BTC",OrderBookType::bid,3,1);
-    orders.push_back(entry1);
-    orders.push_back(entry2);
-    orders.push_back(entry3);
-
-    std::cout << "\nTests:" << std::endl;
-
-    if (OrderBook::getHighPrice(orders) == highPrice)
-    {
-        std::cout << "High Price Test Passed." << std::endl;
-    }
-    else
-    {
-        std::cout << "High Price Test Failed." << std::endl;
-    }
-    if (OrderBook::getLowPrice(orders) == lowPrice)
-    {
-        std::cout << "Low Price Test Passed." << std::endl;
-    }
-    else
-    {
-        std::cout << "Low Price Test Failed." << std::endl;
-    }
-    if (OrderBook::getHighPrice(orders) - OrderBook::getLowPrice(orders) == spread)
-    {
-        std::cout << "Spread Price Test Passed." << std::endl;
-    }
-    else
-    {
-        std::cout << "Spread Price Test Failed." << std::endl;
-    }
-    if (OrderBook::getAvgPrice(orders) == avgPrice)
-    {
-        std::cout << "Avg Price Test Passed." << std::endl;
-    }
-    else
-    {
-        std::cout << "Avg Price Test Failed." << std::endl;
-    }
-
-}
-
 std::string OrderBook::getEarliestTime()
 {
     return orders[0].timestamp;
@@ -173,7 +122,6 @@ void OrderBook::insertOrder(OrderBookEntry& order)
 
 void OrderBook::removeOrder(OrderBookEntry& order)
 {
-    // TODO: Ask Andy, Do i need to remove orders? Or keep track of ones that have been processed
     orders.pop_back();
     std::cout << order.price << " - This is a test in OrderBook::removeOrder" << std::endl;
     std::sort(orders.begin(), orders.end(), OrderBookEntry::comapreByTimeStamp);
