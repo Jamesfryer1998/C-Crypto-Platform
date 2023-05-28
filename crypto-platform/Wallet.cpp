@@ -65,7 +65,7 @@ bool Wallet::containsCurrency(std::string type, double amount)
     {
         return false;
     }
-    else 
+    else
         return currencies[type] >= amount;
 }
 

@@ -21,7 +21,7 @@ cmake -B build # Creates the makefile, re-run from root when CMakeFiles.txt chan
 
 Once done, build the platform:
 ```
- cmake --build build
+cmake --build build
 ```
 
 ## Run the tests:

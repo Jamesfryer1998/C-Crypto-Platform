@@ -213,7 +213,6 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
                     }
                     if (amount <= 0) break;
 
-
                 }
             }
         }
@@ -253,9 +252,8 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
             }
         }
     }
-    // std::cout << "Matched orders number: " << matched_orders.size() << std::endl; 
-
-    // TODO: - Add the fullfilled ordered to a trades vector
+    
+    // TODO:
     // Find a better way to match, we are still looping through the vectors
 
     return matched_orders;

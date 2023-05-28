@@ -64,9 +64,7 @@ OrderBookEntry CSVReader::csvStringToOBE(std::vector<std::string> tokens)
 
     if (tokens.size() != 5) 
     {
-        // std::cout << "Invalid CSV line.";
         throw std::exception{};
-        // bad_count += 1;
     }
     try{
         std::string timestamp = tokens[0];
@@ -74,11 +72,9 @@ OrderBookEntry CSVReader::csvStringToOBE(std::vector<std::string> tokens)
         std::string orderType = tokens[2];
         price = std::stod(tokens[3]);
         amount = std::stod(tokens[4]);
-        // good_count += 1;
     }catch(const std::exception& e)
     {
         std::cout << "Bad data." << std::endl;
-        // bad_count += 1;
         throw;
     }
     OrderBookEntry OBE{tokens[0], tokens[1], OrderBookEntry::StringToOrderBookType(tokens[2]), price, amount};

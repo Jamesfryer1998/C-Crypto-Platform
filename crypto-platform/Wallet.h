@@ -16,6 +16,12 @@ class Wallet
         bool insertCurrency(std::string type, double amount);
         bool containsCurrency(std::string type, double amount);
 
+        //Getters
+        auto getCurrencies()
+        {
+            return currencies;
+        }
+
     private:
         // Variables
         std::map<std::string, double> currencies;

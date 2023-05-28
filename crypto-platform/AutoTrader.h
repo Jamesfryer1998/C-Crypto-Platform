@@ -16,19 +16,18 @@ class AutoTrader{
         void processUserOption(int userOption);
         void callAutoTrader(Wallet walletInput);
 
-        auto getCurrMap()
-        {
-            return currMap;
-        }
+        // auto getCurrMap()
+        // {
+        //     return currMap;
+        // }
 
     private:
         Wallet wallet;
+        Wallet AutoWallet;
         MatchSystem match;
         Strategies strat;
 
         // Maps
-        std::map<std::string, double> currMap;
-        std::map<std::string, double> tradeCurrMap; // Probs need to change these variables,
         std::map<std::string, double> lossMap; // find a neater way to organise everything
         std::map<std::string, double> roiMap;
 

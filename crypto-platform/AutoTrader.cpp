@@ -12,12 +12,12 @@ AutoTrader::AutoTrader()
 
 }
 
-void AutoTrader::callAutoTrader(Wallet walletInput)
+void AutoTrader::callAutoTrader(Wallet userWallet)
 {
     system("clear");
     std::cout << "===== USING NEW MATCHING SYSTEM =====\n" << std::endl;
     match.init();
-    wallet = walletInput;
+    wallet = userWallet;
     while (true)
     {
         AutoTrader::autoTradeMenu();
@@ -32,7 +32,7 @@ void AutoTrader::autoTradeMenu()
 {
     std::cout << "\nWelcome to the Automatic Trading system." << std::endl;
     std::cout << "Please select an option below:\n" << std::endl;
-    std::cout << "1: Select currencies and amount:" << std::endl;
+    std::cout << "1: Select currencies and amount" << std::endl;
     std::cout << "2: Stop Loss %" << std::endl;
     std::cout << "3: Expected Returns (ROI) %" << std::endl;
     std::cout << "4: Start Auto Trader" << std::endl;
@@ -107,6 +107,7 @@ void AutoTrader::currencySelection()
 
     while (true)
     {
+
         std::string currencyInput;
         std::getline(std::cin, currencyInput);
         std::vector<std::string> tokens = CSVReader::tokenise(currencyInput, ',');
@@ -115,30 +116,34 @@ void AutoTrader::currencySelection()
         if (tokens.size()!= 2) std::cout << "Invalid Input." << std::endl;
         else
         {
+            std::string currency = tokens[0];
             double currencyAmount = std::stod(tokens[1]);
-            bool walletContains = wallet.containsCurrency(tokens[0], currencyAmount);
+            bool walletContains = wallet.containsCurrency(currency, currencyAmount);
 
             if (walletContains == 0)
             {
-                std::cout << "Insuficient amount of " << tokens[0] << " in wallet." << std::endl;
+                std::cout << "Insuficient amount of " << currency << " in wallet." << std::endl;
             }
             else
             {
-                if(currMap.count(tokens[0])) continue;
-                else currMap.insert({tokens[0], currencyAmount});
+                if (AutoWallet.containsCurrency(currency, 0)) continue;
+                else {
+                    AutoWallet.insertCurrency(currency, currencyAmount);
+                    wallet.removeCurrency(currency, currencyAmount);
+                }
             }
         }
     }
-    tradeCurrMap = currMap;
 }
 
-/** Calculate final wallet amount from stop loss perfentage */ 
+/** Calculate final wallet amount from stop loss percentage */ 
 void AutoTrader::stopLoss()
 {
     std::cout << "Please enter your prefered % stop loss: ";
     stopLossOption = getUserOption(false);
+    auto currencies = AutoWallet.getCurrencies();
 
-    for(const auto& key_value: currMap) {
+    for(const auto& key_value: currencies) {
         std::string product = key_value.first;
         double finalAmount = key_value.second * (100 - stopLossOption)/100;
         lossMap.insert({product, finalAmount});
@@ -151,8 +156,10 @@ void AutoTrader::ROI()
 {
     std::cout << "Please enter your prefered % ROI: ";
     roi = getUserOption(false);
+    auto currencies = AutoWallet.getCurrencies();
 
-    for(const auto& key_value: currMap) {
+
+    for(const auto& key_value: currencies) {
         std::string product = key_value.first;
         double finalAmount = key_value.second * (100 + stopLossOption)/100;
         roiMap.insert({product, finalAmount});
@@ -163,8 +170,9 @@ void AutoTrader::ROI()
 void AutoTrader::generateTrades()
 {
     auto orderBook = match.getOrderBook();
+    auto currencies = AutoWallet.getCurrencies();
 
-    for (auto& curr: currMap)
+    for (auto& curr: currencies)
     {
         auto productCurrency = match.getProductsOfCurrency(curr.first);
         double tradeAmount = strat.fixedTradeSize(100, curr.second);
