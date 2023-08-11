@@ -236,7 +236,7 @@ std::vector<std::pair<OrderBookEntry, OrderBookEntry>> MatchSystem::matchEngine(
                     amount -= matchAmount;
                     singleBid.amount -= matchAmount;
 
-                    // Adding a tade
+                    // Adding a trade
                     std::vector<std::string> currencies = CSVReader::tokenise(product, '/');
                     std::cout << timestamp << currencies[0] << currencies[1] << price << matchAmount << std::endl;
                     MatchSystem::addTrade(timestamp, currencies[0], currencies[1], price, matchAmount);

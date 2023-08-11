@@ -22,6 +22,7 @@ class AutoTrader{
         // }
 
     private:
+        // Initisalise
         Wallet wallet;
         Wallet AutoWallet;
         MatchSystem match;

@@ -183,12 +183,6 @@ void AutoTrader::generateTrades()
             // Find the average price for a product from asks and bids
             double histAveragePrice = (strat.calcAveragePrice(currencyOrders["orderType"]["ask"]) + 
                                        strat.calcAveragePrice(currencyOrders["orderType"]["bid"]))/2;
-
-            double lowPrice = OrderBook::getLowPrice(currencyOrders["orderType"]["ask"]);
-            double highPrice = OrderBook::getHighPrice(currencyOrders["orderType"]["bid"]);
-
-            // Placeholder neworder
-            // OrderBookEntry newOrder = {"", "", OrderBookType::ask, 1, 1};
             
             // FIXME:
             // Major design flaw, we are now looping through all the asks and then bids
@@ -199,23 +193,43 @@ void AutoTrader::generateTrades()
 
                 if (meanRev == 0)
                 {
+                    std::cout << "ask" << std::endl;
+                    double lowPrice = OrderBook::getLowPrice(currencyOrders["orderType"]["ask"]);
                     OrderBookEntry newOrder(currentOrder.timestamp,
                                             currentOrder.product,
                                             OrderBookType::ask,
                                             lowPrice,
                                             tradeAmount);
-
-                    match.matchEngine(newOrder);
+                    
+                    try{
+                        match.matchEngine(newOrder);
+                        AutoWallet.removeCurrency(curr.first, tradeAmount);
+                    }
+                    catch(const std::exception& e){
+                        std::cout << "Incuffcient funds to carry on operation." << std::endl;
+                        break;
+                    }
                 }
                 else if (meanRev == 1)
                 {
+                    std::cout << "bid" << std::endl;
+
+                    double highPrice = OrderBook::getHighPrice(currencyOrders["orderType"]["bid"]);
                     OrderBookEntry newOrder(currentOrder.timestamp,
                                             currentOrder.product,
                                             OrderBookType::bid,
                                             highPrice,
                                             tradeAmount);
 
-                    match.matchEngine(newOrder);
+                    try{
+                        match.matchEngine(newOrder);
+                        AutoWallet.removeCurrency(curr.first, tradeAmount);
+                    }
+                    catch(const std::exception& e){
+                        std::cout << "Incuffcient funds to carry on operation." << std::endl;
+                        break;
+                    }
+
                 }
                 else if (meanRev == 2) continue;
 
